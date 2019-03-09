@@ -1,9 +1,7 @@
 // Package scanner is the lexical analyzer. It takes an input stream and converts it to a slice of tokens
 package scanner
 
-import (
-	"github.com/pkg/errors"
-)
+import "errors"
 
 // Scanner is responsible for 'tokenizing' the input stream
 // For example:
