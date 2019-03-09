@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// TestNew checks if we can instantiate the scanner when we provide a valid input stream.
+// TestNew checks if we can instantiate the scanner when we provide a valid input stream
 func TestNew(t *testing.T) {
 	expected := "1"
 	scan, _ := scanner.New(expected)
@@ -15,7 +15,7 @@ func TestNew(t *testing.T) {
 }
 
 // TestNew_EmptyStream fails when the instantiation of the scanner succeeds, because
-// the scanner should return an error if we provide an empty input stream.
+// the scanner should return an error if we provide an empty input stream
 func TestNew_EmptyStream(t *testing.T) {
 	input := ""
 	_, err := scanner.New(input)
