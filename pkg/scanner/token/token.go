@@ -12,6 +12,6 @@ const (
 
 // Token contains the type of the token and the lexeme.
 type Token struct {
-	Type int
+	Type   int
 	Lexeme string
 }
