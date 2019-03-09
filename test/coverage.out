@@ -1,0 +1,4 @@
+mode: set
+interpreter/pkg/scanner/scanner.go:12.43,13.22 1 1
+interpreter/pkg/scanner/scanner.go:16.2,18.21 3 1
+interpreter/pkg/scanner/scanner.go:13.22,15.3 1 1
