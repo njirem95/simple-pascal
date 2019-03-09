@@ -1,17 +1,50 @@
-// Package scanner is the lexical analyzer. It takes an input stream and converts it to a slice of tokens
+/*
+Package scanner is responsible for generating tokens of the input stream.
+This process is also known as lexical analyzing, tokenization, and scanning.
+
+For instance, the input "1 + 2 - 1" is equivalent to the following set of tokens:
+	[]Token{
+		{
+			Type: Token.Int,
+			Lexeme: "1",
+		},
+		{
+			Type: Token.Add,
+			Lexeme: "+",
+		},
+		{
+			Type: Token.Int
+			Lexeme: "2",
+		},
+		{
+			Type: Token.Sub,
+			Lexeme: "-",
+		},
+		{
+			Type: Token.Int,
+			Lexeme: "1",
+		},
+		{
+			Type: Token.EOF,
+			Lexeme: "",
+		},
+	}
+
+As you can see, each token consists of a TokenType and a lexeme (an element of the input stream).
+Every set ends with the EOF (End-of-file) token.
+*/
 package scanner
 
-import "errors"
+import (
+	"errors"
+)
 
-// Scanner is responsible for 'tokenizing' the input stream
-// For example:
-// 1 will become Token{TokenType.Integer, "1"}
-// 1 + 2 will become Token{TokenType.Integer, "1"}, Token{TokenType.Addition, "+"}, Token{TokenType.Integer, "2"}
+// Scanner is the type that contains functions regarding tokenization of the input stream.
 type Scanner struct {
 	Stream string
 }
 
-// New creates the struct Scanner. Returns nil if the stream size is empty
+// New creates the struct Scanner. Returns an error if the stream size is zero.
 func New(stream string) (*Scanner, error) {
 	if len(stream) == 0 {
 		return nil, errors.New("input stream is empty")
