@@ -38,6 +38,7 @@ package scanner
 import (
 	"errors"
 	"interpreter/pkg/scanner/token"
+	"strings"
 )
 
 // Scanner is the type that contains functions regarding tokenization of the input stream.
@@ -103,10 +104,16 @@ func (s *Scanner) Next() token.Token {
 			}
 		}
 
-		if s.Current > "0" {
+		if s.Current >= "0" {
+			var sb strings.Builder
+			sb.WriteString(s.Current)
+			for s.Peek() >= "0" {
+				sb.WriteString(s.Peek())
+				s.Advance()
+			}
 			next := token.Token{
 				Type:   token.Int,
-				Lexeme: s.Current,
+				Lexeme: sb.String(),
 			}
 			s.Advance()
 			return next

@@ -122,7 +122,7 @@ func TestScanner_Next_MulDiv(t *testing.T) {
 }
 
 func TestScanner_Next_WithParentheses(t *testing.T) {
-	input := "(1 + 5) * (9 / 2 * (5 - 3))"
+	input := "(10 + 5) * (9 / 2 * (5 - 3))"
 	lexer, err := scanner.New(input)
 	if err != nil {
 		t.Error(err)
@@ -134,7 +134,7 @@ func TestScanner_Next_WithParentheses(t *testing.T) {
 		},
 		{
 			Type:   token.Int,
-			Lexeme: "1",
+			Lexeme: "10",
 		},
 		{
 			Type:   token.Add,
@@ -216,7 +216,7 @@ func TestNew_Peek(t *testing.T) {
 	}
 
 	nextToken := lexer.Next()
-	expected := []string{"5", "+", "2", ""}
+	expected := []string{"+", "2", ""}
 	for _, next := range expected {
 		nextToken = lexer.Next()
 		if nextToken.Lexeme != next {
