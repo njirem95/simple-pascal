@@ -7,64 +7,204 @@ import (
 	"testing"
 )
 
+var (
+	unexpectedTokenError = "didn't expect this token while getting next lexeme"
+	currentLexemeError = "expected lexeme to be %s, got %s"
+)
+
 func TestScanner_Advance(t *testing.T) {
 	input := "1+2"
 
-	scan, err := scanner.New(input)
+	lexer, err := scanner.New(input)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if scan.Current != "1" {
-		t.Fatalf("expected lexeme to be 1, got %s", scan.Current)
-	}
-	scan.Advance()
-	if scan.Current != "+" {
-		t.Fatalf("expected lexeme to be +, got %s", scan.Current)
-	}
-	scan.Advance()
-	if scan.Current != "2" {
-		t.Fatalf("expected lexeme to be 2, got %s", scan.Current)
-	}
-	scan.Advance()
-	if scan.Current != "" {
-		t.Fatalf("expected lexeme to be empty, got %s", scan.Current)
+	expected := [4]string{"1", "+", "2", ""}
+	for _, current := range expected {
+		if current != lexer.Current {
+			t.Errorf(currentLexemeError, current, lexer.Current)
+		}
+		lexer.Advance()
 	}
 }
 
 func TestScanner_Next_AddSub(t *testing.T) {
-	scan, _ := scanner.New("1 +  2")
-	expected := token.Token{
-		Type:   token.Int,
-		Lexeme: "1",
+	lexer, _ := scanner.New("1 +  2 - 1")
+	expected := []token.Token{
+		{
+			Type:   token.Int,
+			Lexeme: "1",
+		},
+		{
+			Type:   token.Add,
+			Lexeme: "+",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "2",
+		},
+		{
+			Type:   token.Sub,
+			Lexeme: "-",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "1",
+		},
+		{
+			Type:   token.EOF,
+			Lexeme: "",
+		},
 	}
-	next := scan.Next()
 
-	if !reflect.DeepEqual(expected, next) {
-		t.Error("unexpected token")
+	for _, next := range expected {
+		if !reflect.DeepEqual(next, lexer.Next()) {
+			t.Error(unexpectedTokenError)
+		}
 	}
-	expected = token.Token{
-		Type:   token.Add,
-		Lexeme: "+",
+}
+
+func TestScanner_Next_MulDiv(t *testing.T) {
+	input := "5 * 2 / 3 + 8 - 5"
+	lexer, err := scanner.New(input)
+	if err != nil {
+		t.Error(err)
 	}
-	next = scan.Next()
-	if !reflect.DeepEqual(expected, next) {
-		t.Error("unexpected token")
+	expected := []token.Token{
+		{
+			Type:   token.Int,
+			Lexeme: "5",
+		},
+		{
+			Type:   token.Mul,
+			Lexeme: "*",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "2",
+		},
+		{
+			Type:   token.Div,
+			Lexeme: "/",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "3",
+		},
+		{
+			Type:   token.Add,
+			Lexeme: "+",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "8",
+		},
+		{
+			Type:   token.Sub,
+			Lexeme: "-",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "5",
+		},
+		{
+			Type:   token.EOF,
+			Lexeme: "",
+		},
 	}
-	next = scan.Next()
-	expected = token.Token{
-		Type:   token.Int,
-		Lexeme: "2",
+
+	for _, next := range expected {
+		if !reflect.DeepEqual(next, lexer.Next()) {
+			t.Error(unexpectedTokenError)
+		}
 	}
-	if !reflect.DeepEqual(expected, next) {
-		t.Error("unexpected token")
+
+}
+
+func TestScanner_Next_WithParentheses(t *testing.T) {
+	input := "(1 + 5) * (9 / 2 * (5 - 3))"
+	lexer, err := scanner.New(input)
+	if err != nil {
+		t.Error(err)
 	}
-	next = scan.Next()
-	expected = token.Token{
-		Type:   token.EOF,
-		Lexeme: "",
+	expected := []token.Token{
+		{
+			Type:   token.Lparen,
+			Lexeme: "(",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "1",
+		},
+		{
+			Type:   token.Add,
+			Lexeme: "+",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "5",
+		},
+		{
+			Type:   token.Rparen,
+			Lexeme: ")",
+		},
+		{
+			Type:   token.Mul,
+			Lexeme: "*",
+		},
+		{
+			Type:   token.Lparen,
+			Lexeme: "(",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "9",
+		},
+		{
+			Type:   token.Div,
+			Lexeme: "/",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "2",
+		},
+		{
+			Type:   token.Mul,
+			Lexeme: "*",
+		},
+		{
+			Type:   token.Lparen,
+			Lexeme: "(",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "5",
+		},
+		{
+			Type:   token.Sub,
+			Lexeme: "-",
+		},
+		{
+			Type:   token.Int,
+			Lexeme: "3",
+		},
+		{
+			Type:   token.Rparen,
+			Lexeme: ")",
+		},
+		{
+			Type:   token.Rparen,
+			Lexeme: ")",
+		},
+		{
+			Type:   token.EOF,
+			Lexeme: "",
+		},
 	}
-	if !reflect.DeepEqual(expected, next) {
-		t.Error("unexpected token")
+	for _, next := range expected {
+		if !reflect.DeepEqual(next, lexer.Next()) {
+			t.Error(unexpectedTokenError)
+		}
 	}
 }
 

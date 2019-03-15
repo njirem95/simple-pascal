@@ -62,6 +62,47 @@ func (s *Scanner) Next() token.Token {
 				Lexeme: "+",
 			}
 		}
+
+		if s.Current == "-" {
+			s.Advance()
+			return token.Token{
+				Type:   token.Sub,
+				Lexeme: "-",
+			}
+		}
+
+		if s.Current == "*" {
+			s.Advance()
+			return token.Token{
+				Type:   token.Mul,
+				Lexeme: "*",
+			}
+		}
+
+		if s.Current == "/" {
+			s.Advance()
+			return token.Token{
+				Type:   token.Div,
+				Lexeme: "/",
+			}
+		}
+
+		if s.Current == "(" {
+			s.Advance()
+			return token.Token{
+				Type:   token.Lparen,
+				Lexeme: "(",
+			}
+		}
+
+		if s.Current == ")" {
+			s.Advance()
+			return token.Token{
+				Type:   token.Rparen,
+				Lexeme: ")",
+			}
+		}
+
 		if s.Current > "0" {
 			next := token.Token{
 				Type:   token.Int,
