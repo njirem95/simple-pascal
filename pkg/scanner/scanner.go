@@ -111,12 +111,11 @@ func (s *Scanner) Next() token.Token {
 				sb.WriteString(s.Peek())
 				s.Advance()
 			}
-			next := token.Token{
+			s.Advance()
+			return token.Token{
 				Type:   token.Int,
 				Lexeme: sb.String(),
 			}
-			s.Advance()
-			return next
 		}
 
 	}
