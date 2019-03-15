@@ -208,6 +208,23 @@ func TestScanner_Next_WithParentheses(t *testing.T) {
 	}
 }
 
+func TestNew_Peek(t *testing.T) {
+	input := "15 + 2"
+	lexer, err := scanner.New(input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	nextToken := lexer.Next()
+	expected := []string{"5", "+", "2", ""}
+	for _, next := range expected {
+		nextToken = lexer.Next()
+		if nextToken.Lexeme != next {
+			t.Errorf("peeking failed, got %s instead of %s", nextToken.Lexeme, next)
+		}
+	}
+}
+
 // TestNew checks if we can instantiate the scanner when we provide a valid input stream
 func TestNew(t *testing.T) {
 	expected := "1"

@@ -119,6 +119,15 @@ func (s *Scanner) Next() token.Token {
 	}
 }
 
+// Peek retrieves the next lexeme from the input stream without advancing the current position
+// of the input stream.
+func (s *Scanner) Peek() string {
+	if s.Position+1 >= len(s.Stream) {
+		return ""
+	}
+	return string(s.Stream[s.Position+1])
+}
+
 // Advance changes the current position and assigns the new position to s.Current.
 func (s *Scanner) Advance() {
 	if s.Position+1 >= len(s.Stream) {
