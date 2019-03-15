@@ -8,8 +8,11 @@ import (
 )
 
 var (
+	instantiationError = "expected (%s) does not equal scanner.Stream (%s)"
+	errorExpectedError = "expected to receive an error, but err is nil"
 	unexpectedTokenError = "didn't expect this token while getting next lexeme"
 	currentLexemeError   = "expected lexeme to be %s, got %s"
+	peekingError  = "peeking failed, got %s instead of %s"
 )
 
 func TestScanner_Advance(t *testing.T) {
@@ -220,7 +223,7 @@ func TestNew_Peek(t *testing.T) {
 	for _, next := range expected {
 		nextToken = lexer.Next()
 		if nextToken.Lexeme != next {
-			t.Errorf("peeking failed, got %s instead of %s", nextToken.Lexeme, next)
+			t.Errorf(peekingError, nextToken.Lexeme, next)
 		}
 	}
 }
@@ -230,7 +233,7 @@ func TestNew(t *testing.T) {
 	expected := "1"
 	scan, _ := scanner.New(expected)
 	if scan.Stream != expected {
-		t.Errorf("expected (%s) does not equal scanner.Stream (%s)", expected, scan.Stream)
+		t.Errorf(instantiationError, expected, scan.Stream)
 	}
 }
 
@@ -240,6 +243,6 @@ func TestNew_EmptyInput(t *testing.T) {
 	input := ""
 	_, err := scanner.New(input)
 	if err == nil {
-		t.Errorf("expected to receive an error, but err is nil")
+		t.Error(errorExpectedError)
 	}
 }
