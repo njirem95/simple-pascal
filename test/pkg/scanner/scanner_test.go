@@ -9,7 +9,7 @@ import (
 
 var (
 	unexpectedTokenError = "didn't expect this token while getting next lexeme"
-	currentLexemeError = "expected lexeme to be %s, got %s"
+	currentLexemeError   = "expected lexeme to be %s, got %s"
 )
 
 func TestScanner_Advance(t *testing.T) {
