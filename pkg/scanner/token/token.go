@@ -1,6 +1,5 @@
 package token
 
-// TODO write godoc for the constants below
 const (
 	Int = iota
 	Add = iota
@@ -10,7 +9,7 @@ const (
 	EOF = iota
 )
 
-// Token contains the type of the token and the lexeme.
+// Token contains the token type and the lexeme
 type Token struct {
 	Type   int
 	Lexeme string
