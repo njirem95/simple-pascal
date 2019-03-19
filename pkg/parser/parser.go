@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	endReachedError = errors.New("reached end of recursion")
-	unaryNumError   = errors.New("expected unary child to be a num")
+	consumeTokenError = errors.New("unable to consume token")
+	endReachedError   = errors.New("reached end of recursion")
+	unaryNumError     = errors.New("expected unary child to be a num")
 )
 
 type Parser struct {
@@ -22,7 +23,7 @@ func (p *Parser) Consume(tokenType int) error {
 		p.currentToken = p.lexer.Next()
 		return nil
 	}
-	return errors.New("unable to consume token")
+	return consumeTokenError
 }
 
 // factor : integer
