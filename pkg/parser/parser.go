@@ -7,6 +7,11 @@ import (
 	"interpreter/pkg/scanner/token"
 )
 
+var (
+	endReachedError = errors.New("reached end of recursion")
+	unaryNumError   = errors.New("expected unary child to be a num")
+)
+
 type Parser struct {
 	lexer        *scanner.Scanner
 	currentToken token.Token
@@ -39,7 +44,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		}
 		child, ok := factor.(*ast.Num)
 		if !ok {
-			return nil, errors.New("expected unary child to be a num")
+			return nil, unaryNumError
 		}
 		node.Expression = child
 		return node, nil
@@ -57,7 +62,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		}
 		child, ok := factor.(*ast.Num)
 		if !ok {
-			return nil, errors.New("expected unary child to be a num")
+			return nil, unaryNumError
 		}
 		node.Expression = child
 		return node, nil
@@ -72,7 +77,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		}
 		return node, nil
 	}
-	return nil, errors.New("end of factor reached")
+	return nil, endReachedError
 }
 
 // New creates the struct Parser.
