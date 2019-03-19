@@ -53,7 +53,6 @@ func TestParser_Consume(t *testing.T) {
 }
 
 func TestParser_Factor(t *testing.T) {
-	// Use the lexer
 	lexer, err := scanner.New("20")
 	if err != nil {
 		t.Error(err)
@@ -80,5 +79,23 @@ func TestParser_Factor(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, num.Token) {
 		t.Error("expected does not equal num.Token")
+	}
+}
+
+func TestParser_Factor_TestUnaryAdd(t *testing.T) {
+	lexer, err := scanner.New("+20")
+	if err != nil {
+		t.Error(err)
+	}
+	parser := parser.New(lexer)
+	expression, err := parser.Factor()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// sanity check
+	_, ok := expression.(*ast.UnaryOp)
+	if !ok {
+		t.Fatal("expected *ast.UnaryOp")
 	}
 }
