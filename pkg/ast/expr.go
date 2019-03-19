@@ -5,6 +5,4 @@ type Expr interface {
 }
 
 type Node interface {
-
 }
-

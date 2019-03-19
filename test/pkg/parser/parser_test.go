@@ -75,7 +75,7 @@ func TestParser_Factor(t *testing.T) {
 	}
 
 	expected := token.Token{
-		Type: token.Int,
+		Type:   token.Int,
 		Lexeme: "20",
 	}
 	if !reflect.DeepEqual(expected, num.Token) {

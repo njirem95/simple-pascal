@@ -8,7 +8,7 @@ import (
 )
 
 type Parser struct {
-	lexer *scanner.Scanner
+	lexer        *scanner.Scanner
 	currentToken token.Token
 }
 
@@ -25,7 +25,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 	switch p.currentToken.Type {
 	case token.Int:
 		node := &ast.Num{
-			Token: p.currentToken,
+			Token:  p.currentToken,
 			Lexeme: p.currentToken.Lexeme,
 		}
 		err := p.Consume(token.Int)
@@ -40,7 +40,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 // New creates the struct Parser.
 func New(lexer *scanner.Scanner) *Parser {
 	parser := &Parser{}
-	parser.lexer =  lexer
+	parser.lexer = lexer
 	parser.currentToken = parser.lexer.Next()
 	return parser
 }
