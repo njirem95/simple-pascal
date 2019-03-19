@@ -94,8 +94,20 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	}
 
 	// sanity check
-	_, ok := expression.(*ast.UnaryOp)
+	node, ok := expression.(*ast.UnaryOp)
 	if !ok {
 		t.Fatal("expected *ast.UnaryOp")
+	}
+
+	if node.Expression.Lexeme != "20" {
+		t.Error("expected lexeme to be 20")
+	}
+
+	expected := token.Token{
+		Type: token.Add,
+		Lexeme: "+",
+	}
+	if !reflect.DeepEqual(expected, node.Operator) {
+		t.Error("expected token to be token.Add")
 	}
 }

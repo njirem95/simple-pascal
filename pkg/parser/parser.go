@@ -43,6 +43,8 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		}
 		node.Expression = child
 		return node, nil
+	case token.Sub:
+
 	case token.Int:
 		node := &ast.Num{
 			Token:  p.currentToken,
