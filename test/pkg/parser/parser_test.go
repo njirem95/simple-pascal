@@ -55,6 +55,9 @@ func TestParser_Consume(t *testing.T) {
 func TestParser_Factor(t *testing.T) {
 	// Use the lexer
 	lexer, err := scanner.New("20")
+	if err != nil {
+		t.Error(err)
+	}
 	parser := parser.New(lexer)
 	expression, err := parser.Factor()
 	if err != nil {
