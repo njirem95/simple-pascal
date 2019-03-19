@@ -104,7 +104,7 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	}
 
 	expected := token.Token{
-		Type: token.Add,
+		Type:   token.Add,
 		Lexeme: "+",
 	}
 	if !reflect.DeepEqual(expected, node.Operator) {
@@ -134,7 +134,7 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 	}
 
 	expected := token.Token{
-		Type: token.Sub,
+		Type:   token.Sub,
 		Lexeme: "-",
 	}
 	if !reflect.DeepEqual(expected, node.Operator) {
