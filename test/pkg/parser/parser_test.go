@@ -111,3 +111,33 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 		t.Error("expected token to be token.Add")
 	}
 }
+
+func TestParser_Factor_TestUnarySub(t *testing.T) {
+	lexer, err := scanner.New("-20")
+	if err != nil {
+		t.Error(err)
+	}
+	parser := parser.New(lexer)
+	expression, err := parser.Factor()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// sanity check
+	node, ok := expression.(*ast.UnaryOp)
+	if !ok {
+		t.Fatal("expected *ast.UnaryOp")
+	}
+
+	if node.Expression.Lexeme != "20" {
+		t.Error("expected lexeme to be 20")
+	}
+
+	expected := token.Token{
+		Type: token.Sub,
+		Lexeme: "-",
+	}
+	if !reflect.DeepEqual(expected, node.Operator) {
+		t.Error("expected token to be token.Sub")
+	}
+}

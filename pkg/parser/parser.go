@@ -44,7 +44,23 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		node.Expression = child
 		return node, nil
 	case token.Sub:
-
+		node := &ast.UnaryOp{
+			Operator: p.currentToken,
+		}
+		err := p.Consume(token.Sub)
+		if err != nil {
+			return nil, err
+		}
+		factor, err := p.Factor()
+		if err != nil {
+			return nil, err
+		}
+		child, ok := factor.(*ast.Num)
+		if !ok {
+			return nil, errors.New("expected unary child to be a num")
+		}
+		node.Expression = child
+		return node, nil
 	case token.Int:
 		node := &ast.Num{
 			Token:  p.currentToken,
