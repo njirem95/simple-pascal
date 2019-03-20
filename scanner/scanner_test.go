@@ -1,8 +1,8 @@
 package scanner_test
 
 import (
-	"interpreter/pkg/scanner"
-	"interpreter/pkg/scanner/token"
+	"interpreter/scanner"
+	"interpreter/scanner/token"
 	"reflect"
 	"testing"
 )

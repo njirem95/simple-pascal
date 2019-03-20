@@ -2,9 +2,9 @@ package parser
 
 import (
 	"errors"
-	"interpreter/pkg/ast"
-	"interpreter/pkg/scanner"
-	"interpreter/pkg/scanner/token"
+	"interpreter/ast"
+	"interpreter/scanner"
+	"interpreter/scanner/token"
 )
 
 var (

@@ -37,7 +37,7 @@ package scanner
 
 import (
 	"errors"
-	"interpreter/pkg/scanner/token"
+	"interpreter/scanner/token"
 	"strings"
 )
 

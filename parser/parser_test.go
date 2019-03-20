@@ -1,10 +1,10 @@
 package parser_test
 
 import (
-	"interpreter/pkg/ast"
-	"interpreter/pkg/parser"
-	"interpreter/pkg/scanner"
-	"interpreter/pkg/scanner/token"
+	"interpreter/ast"
+	"interpreter/parser"
+	"interpreter/scanner"
+	"interpreter/scanner/token"
 	"reflect"
 	"testing"
 )

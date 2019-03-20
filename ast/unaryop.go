@@ -1,6 +1,6 @@
 package ast
 
-import "interpreter/pkg/scanner/token"
+import "interpreter/scanner/token"
 
 type UnaryOp struct {
 	Operator   token.Token
