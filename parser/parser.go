@@ -2,9 +2,9 @@ package parser
 
 import (
 	"errors"
-	"interpreter/ast"
-	"interpreter/scanner"
-	"interpreter/scanner/token"
+	"github.com/njirem95/simple-pascal/ast"
+	"github.com/njirem95/simple-pascal/scanner"
+	"github.com/njirem95/simple-pascal/scanner/token"
 )
 
 var (

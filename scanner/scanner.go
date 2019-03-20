@@ -37,7 +37,7 @@ package scanner
 
 import (
 	"errors"
-	"interpreter/scanner/token"
+	"github.com/njirem95/simple-pascal/scanner/token"
 	"strings"
 )
 

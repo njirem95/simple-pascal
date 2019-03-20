@@ -1,8 +1,8 @@
 package scanner_test
 
 import (
-	"interpreter/scanner"
-	"interpreter/scanner/token"
+	"github.com/njirem95/simple-pascal/scanner"
+	"github.com/njirem95/simple-pascal/scanner/token"
 	"reflect"
 	"testing"
 )

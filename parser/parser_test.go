@@ -1,10 +1,10 @@
 package parser_test
 
 import (
-	"interpreter/ast"
-	"interpreter/parser"
-	"interpreter/scanner"
-	"interpreter/scanner/token"
+	"github.com/njirem95/simple-pascal/ast"
+	"github.com/njirem95/simple-pascal/parser"
+	"github.com/njirem95/simple-pascal/scanner"
+	"github.com/njirem95/simple-pascal/scanner/token"
 	"reflect"
 	"testing"
 )
