@@ -53,45 +53,138 @@ func TestParser_Consume(t *testing.T) {
 }
 
 func TestParser_Expr(t *testing.T) {
-	lexer, err := scanner.New("20 + 15")
-	if err != nil {
-		t.Error(err)
-	}
-	parser := parser.New(lexer)
-	expression, err := parser.Expr()
-	if err != nil {
-		t.Error(err)
-	}
-
-	// sanity check
-	operation, ok := expression.(*ast.BinOp)
-	if !ok {
-		t.Fatalf("expected *ast.BinOp, got %s", reflect.TypeOf(expression))
-	}
-
-	expected := &ast.BinOp{
-		Left: &ast.Num{
-			Token: token.Token{
-				Type:   token.Int,
+	expected := []ast.BinOp{
+		{
+			Left: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "20",
+				},
 				Lexeme: "20",
 			},
-			Lexeme: "20",
-		},
-		Operator: token.Token{
-			Type:   token.Add,
-			Lexeme: "+",
-		},
-		Right: &ast.Num{
-			Token: token.Token{
-				Type:   token.Int,
+			Operator: token.Token{
+				Type:   token.Add,
+				Lexeme: "+",
+			},
+			Right: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "15",
+				},
 				Lexeme: "15",
 			},
-			Lexeme: "15",
+		},
+		{
+			Left: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "20",
+				},
+				Lexeme: "20",
+			},
+			Operator: token.Token{
+				Type:   token.Sub,
+				Lexeme: "-",
+			},
+			Right: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "15",
+				},
+				Lexeme: "15",
+			},
 		},
 	}
+	inputs := [2]string{"20 + 15", "20 - 15"}
+	for index, input := range inputs {
+		lexer, err := scanner.New(input)
+		if err != nil {
+			t.Error(err)
+		}
+		parser := parser.New(lexer)
+		expression, err := parser.Expr()
+		if err != nil {
+			t.Error(err)
+		}
 
-	if !reflect.DeepEqual(expected, operation) {
-		t.Error("binary operation does not match expected")
+		// sanity check
+		operation, ok := expression.(*ast.BinOp)
+		if !ok {
+			t.Fatalf("expected *ast.BinOp, got %s", reflect.TypeOf(expression))
+		}
+
+		// Take the memory location of expected[index] and check if it matches with the expression.
+		if !reflect.DeepEqual(&expected[index], operation) {
+			t.Error("binary operation does not match expected")
+		}
+	}
+}
+
+func TestParser_Term(t *testing.T) {
+	expected := []ast.BinOp{
+		{
+			Left: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "20",
+				},
+				Lexeme: "20",
+			},
+			Operator: token.Token{
+				Type:   token.Mul,
+				Lexeme: "*",
+			},
+			Right: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "5",
+				},
+				Lexeme: "5",
+			},
+		},
+		{
+			Left: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "20",
+				},
+				Lexeme: "20",
+			},
+			Operator: token.Token{
+				Type:   token.Div,
+				Lexeme: "/",
+			},
+			Right: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "5",
+				},
+				Lexeme: "5",
+			},
+		},
+	}
+	inputs := [2]string{"20 * 5", "20 / 5"}
+	for index, input := range inputs {
+		lexer, err := scanner.New(input)
+		if err != nil {
+			t.Error(err)
+		}
+		parser := parser.New(lexer)
+		expression, err := parser.Term()
+		if err != nil {
+			t.Error(err)
+		}
+
+		// sanity check
+		operation, ok := expression.(*ast.BinOp)
+		if !ok {
+			t.Fatalf("expected *ast.BinOp, got %s", reflect.TypeOf(expression))
+		}
+
+		// Take the memory location of expected[index] and check if it matches with the expression.
+		if !reflect.DeepEqual(&expected[index], operation) {
+			t.Error("binary operation does not match expected")
+		}
 	}
 }
 
