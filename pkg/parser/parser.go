@@ -72,6 +72,38 @@ func (p *Parser) Term() (ast.Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Check if current token is of type multiplication or division
+	for p.currentToken.Type == token.Mul || p.currentToken.Type == token.Div {
+		operator := p.currentToken
+		err = p.Consume(p.currentToken.Type)
+		if err != nil {
+			return nil, err
+		}
+
+		// We expect left to be of type num.
+		left, ok := node.(*ast.Num)
+		if !ok {
+			return nil, errors.New("expected type num")
+		}
+
+		// Get the value on the right
+		node, err = p.Factor()
+		if err != nil {
+			return nil, err
+		}
+
+		right, ok := node.(*ast.Num)
+		if !ok {
+			return nil, errors.New("expected type num")
+		}
+
+		node = &ast.BinOp{
+			Left:     left,
+			Operator: operator,
+			Right:    right,
+		}
+		return node, nil
+	}
 	return node, nil
 }
 
