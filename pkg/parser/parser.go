@@ -26,7 +26,58 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
+func (p *Parser) Expr() (ast.Expr, error) {
+	node, err := p.Term()
+	if err != nil {
+		return nil, err
+	}
+	// Check if current token is of type addition or subtraction
+	for p.currentToken.Type == token.Add || p.currentToken.Type == token.Sub {
+		operator := p.currentToken
+		err = p.Consume(p.currentToken.Type)
+		if err != nil {
+			return nil, err
+		}
+
+		// We expect left to be of type num.
+		left, ok := node.(*ast.Num)
+		if !ok {
+			return nil, errors.New("expected type num")
+		}
+
+		// Get the value on the right
+		node, err = p.Term()
+		if err != nil {
+			return nil, err
+		}
+
+		right, ok := node.(*ast.Num)
+		if !ok {
+			return nil, errors.New("expected type num")
+		}
+
+		node = &ast.BinOp{
+			Left:     left,
+			Operator: operator,
+			Right:    right,
+		}
+		return node, nil
+	}
+	return node, nil
+}
+
+// term : factor ((mul|div) factor)*
+func (p *Parser) Term() (ast.Expr, error) {
+	node, err := p.Factor()
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 // factor : integer
+//			| add factor
+//			| sub factor
 func (p *Parser) Factor() (ast.Expr, error) {
 	switch p.currentToken.Type {
 	case token.Add:
@@ -38,7 +89,6 @@ func (p *Parser) Factor() (ast.Expr, error) {
 			return nil, err
 		}
 
-		// assign expression
 		factor, err := p.Factor()
 		if err != nil {
 			return nil, err

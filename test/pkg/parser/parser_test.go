@@ -52,6 +52,49 @@ func TestParser_Consume(t *testing.T) {
 	}
 }
 
+func TestParser_Expr(t *testing.T) {
+	lexer, err := scanner.New("20 + 15")
+	if err != nil {
+		t.Error(err)
+	}
+	parser := parser.New(lexer)
+	expression, err := parser.Expr()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// sanity check
+	operation, ok := expression.(*ast.BinOp)
+	if !ok {
+		t.Fatalf("expected *ast.BinOp, got %s", reflect.TypeOf(expression))
+	}
+
+	expected := &ast.BinOp{
+		Left: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "20",
+			},
+			Lexeme: "20",
+		},
+		Operator: token.Token{
+			Type:   token.Add,
+			Lexeme: "+",
+		},
+		Right: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "15",
+			},
+			Lexeme: "15",
+		},
+	}
+
+	if !reflect.DeepEqual(expected, operation) {
+		t.Error("binary operation does not match expected")
+	}
+}
+
 func TestParser_Factor(t *testing.T) {
 	lexer, err := scanner.New("20")
 	if err != nil {
@@ -66,7 +109,7 @@ func TestParser_Factor(t *testing.T) {
 	// sanity check
 	num, ok := expression.(*ast.Num)
 	if !ok {
-		t.Fatal("expected *ast.Num")
+		t.Fatalf("expected *ast.Num, got %s", reflect.TypeOf(expression))
 	}
 
 	if num.Lexeme != "20" {
