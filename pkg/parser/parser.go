@@ -110,6 +110,7 @@ func (p *Parser) Term() (ast.Expr, error) {
 // factor : integer
 //			| add factor
 //			| sub factor
+// 			| lparen expr rparen
 func (p *Parser) Factor() (ast.Expr, error) {
 	switch p.currentToken.Type {
 	case token.Add:
@@ -159,6 +160,21 @@ func (p *Parser) Factor() (ast.Expr, error) {
 			return nil, err
 		}
 		return node, nil
+	case token.Lparen:
+		err := p.Consume(token.Lparen)
+		if err != nil {
+			return nil, err
+		}
+		expr, err := p.Expr()
+		if err != nil {
+			return nil, err
+		}
+
+		err = p.Consume(token.Rparen)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	}
 	return nil, endReachedError
 }

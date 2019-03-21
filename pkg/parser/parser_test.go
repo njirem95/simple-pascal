@@ -277,3 +277,45 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 		t.Error("expected token to be token.Sub")
 	}
 }
+
+func TestParser_Factor_TestLParenExprRparen(t *testing.T) {
+	expected := &ast.BinOp{
+		Left: &ast.Num{
+			Token: token.Token{
+				Type: token.Int,
+				Lexeme: "1",
+			},
+			Lexeme: "1",
+		},
+		Operator: token.Token{
+			Type: token.Mul,
+			Lexeme: "*",
+		},
+		Right: &ast.Num{
+			Token: token.Token{
+				Type: token.Int,
+				Lexeme: "20",
+			},
+			Lexeme: "20",
+		},
+	}
+	lexer, err := scanner.New("(1 * 20)")
+	if err != nil {
+		t.Error(err)
+	}
+	parser := parser.New(lexer)
+	expression, err := parser.Factor()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// sanity check
+	node, ok := expression.(*ast.BinOp)
+	if !ok {
+		t.Fatal("expected *ast.UnaryOp")
+	}
+
+	if !reflect.DeepEqual(node, expected) {
+		t.Error("node does not equal expected")
+	}
+}
