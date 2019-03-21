@@ -282,18 +282,18 @@ func TestParser_Factor_TestLParenExprRparen(t *testing.T) {
 	expected := &ast.BinOp{
 		Left: &ast.Num{
 			Token: token.Token{
-				Type: token.Int,
+				Type:   token.Int,
 				Lexeme: "1",
 			},
 			Lexeme: "1",
 		},
 		Operator: token.Token{
-			Type: token.Mul,
+			Type:   token.Mul,
 			Lexeme: "*",
 		},
 		Right: &ast.Num{
 			Token: token.Token{
-				Type: token.Int,
+				Type:   token.Int,
 				Lexeme: "20",
 			},
 			Lexeme: "20",
