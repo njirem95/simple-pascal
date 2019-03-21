@@ -66,7 +66,6 @@ func (p *Parser) Expr() (ast.Expr, error) {
 	return node, nil
 }
 
-// term : factor ((mul|div) factor)*
 func (p *Parser) Term() (ast.Expr, error) {
 	node, err := p.Factor()
 	if err != nil {
@@ -107,10 +106,6 @@ func (p *Parser) Term() (ast.Expr, error) {
 	return node, nil
 }
 
-// factor : integer
-//			| add factor
-//			| sub factor
-// 			| lparen expr rparen
 func (p *Parser) Factor() (ast.Expr, error) {
 	switch p.currentToken.Type {
 	case token.Add:
