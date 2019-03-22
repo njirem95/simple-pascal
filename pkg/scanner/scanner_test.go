@@ -3,30 +3,21 @@ package scanner_test
 import (
 	"github.com/njirem95/simple-pascal/pkg/scanner"
 	"github.com/njirem95/simple-pascal/pkg/scanner/token"
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-var (
-	instantiationError   = "expected (%s) does not equal scanner.Stream (%s)"
-	errorExpectedError   = "expected to receive an error, but err is nil"
-	unexpectedTokenError = "didn't expect this token while getting next lexeme"
-	currentLexemeError   = "expected lexeme to be %s, got %s"
-	peekingError         = "peeking failed, got %s instead of %s"
-)
+var unexpectedTokenError = "unexpected token"
 
 func TestScanner_Advance(t *testing.T) {
 	input := "1+2"
+	expected := [4]string{"1", "+", "2", ""}
 
 	lexer, err := scanner.New(input)
-	if err != nil {
-		t.Fatal(err)
-	}
-	expected := [4]string{"1", "+", "2", ""}
+	assert.Nil(t, err)
+
 	for _, current := range expected {
-		if current != lexer.Current {
-			t.Errorf(currentLexemeError, current, lexer.Current)
-		}
+		assert.Equal(t, current, lexer.Current, "invalid lexeme")
 		lexer.Advance()
 	}
 }
@@ -61,18 +52,12 @@ func TestScanner_Next_AddSub(t *testing.T) {
 	}
 
 	for _, next := range expected {
-		if !reflect.DeepEqual(next, lexer.Next()) {
-			t.Error(unexpectedTokenError)
-		}
+		assert.Equal(t, next, lexer.Next(), unexpectedTokenError)
 	}
 }
 
 func TestScanner_Next_MulDiv(t *testing.T) {
 	input := "5 * 2 / 3 + 8 - 5"
-	lexer, err := scanner.New(input)
-	if err != nil {
-		t.Error(err)
-	}
 	expected := []token.Token{
 		{
 			Type:   token.Int,
@@ -116,20 +101,16 @@ func TestScanner_Next_MulDiv(t *testing.T) {
 		},
 	}
 
-	for _, next := range expected {
-		if !reflect.DeepEqual(next, lexer.Next()) {
-			t.Error(unexpectedTokenError)
-		}
-	}
+	lexer, err := scanner.New(input)
 
+	assert.Nil(t, err)
+	for _, next := range expected {
+		assert.Equal(t, next, lexer.Next(), unexpectedTokenError)
+	}
 }
 
 func TestScanner_Next_WithParentheses(t *testing.T) {
 	input := "(10 + 5) * (9 / 2 * (5 - 3))"
-	lexer, err := scanner.New(input)
-	if err != nil {
-		t.Error(err)
-	}
 	expected := []token.Token{
 		{
 			Type:   token.Lparen,
@@ -204,45 +185,39 @@ func TestScanner_Next_WithParentheses(t *testing.T) {
 			Lexeme: "",
 		},
 	}
+
+	lexer, err := scanner.New(input)
+
+	assert.Nil(t, err)
 	for _, next := range expected {
-		if !reflect.DeepEqual(next, lexer.Next()) {
-			t.Error(unexpectedTokenError)
-		}
+		assert.Equal(t, next, lexer.Next(), unexpectedTokenError)
 	}
 }
 
 func TestNew_Peek(t *testing.T) {
 	input := "15 + 2"
-	lexer, err := scanner.New(input)
-	if err != nil {
-		t.Error(err)
-	}
-
-	nextToken := lexer.Next()
 	expected := []string{"+", "2", ""}
+
+	lexer, err := scanner.New(input)
+	nextToken := lexer.Next()
+
+	assert.Nil(t, err)
 	for _, next := range expected {
 		nextToken = lexer.Next()
-		if nextToken.Lexeme != next {
-			t.Errorf(peekingError, nextToken.Lexeme, next)
-		}
+		assert.Equal(t, nextToken.Lexeme, next, unexpectedTokenError)
 	}
 }
 
-// TestNew checks if we can instantiate the scanner when we provide a valid input stream
 func TestNew(t *testing.T) {
 	expected := "1"
-	scan, _ := scanner.New(expected)
-	if scan.Stream != expected {
-		t.Errorf(instantiationError, expected, scan.Stream)
-	}
+	scan, err := scanner.New(expected)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expected, scan.Stream, "unable to instantiate")
 }
 
-// TestNew_EmptyInput fails when the instantiation of the scanner succeeds, because
-// the scanner should return an error if we provide an empty input stream
 func TestNew_EmptyInput(t *testing.T) {
 	input := ""
 	_, err := scanner.New(input)
-	if err == nil {
-		t.Error(errorExpectedError)
-	}
+	assert.NotNil(t, err)
 }
