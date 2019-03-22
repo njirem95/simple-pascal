@@ -23,7 +23,6 @@ func TestScanner_Advance(t *testing.T) {
 }
 
 func TestScanner_Next_AddSub(t *testing.T) {
-	lexer, _ := scanner.New("1 +  2 - 1")
 	expected := []token.Token{
 		{
 			Type:   token.Int,
@@ -50,6 +49,9 @@ func TestScanner_Next_AddSub(t *testing.T) {
 			Lexeme: "",
 		},
 	}
+
+	lexer, err := scanner.New("1 +  2 - 1")
+	assert.Nil(t, err)
 
 	for _, next := range expected {
 		assert.Equal(t, next, lexer.Next(), unexpectedTokenError)
@@ -202,6 +204,7 @@ func TestNew_Peek(t *testing.T) {
 	nextToken := lexer.Next()
 
 	assert.Nil(t, err)
+
 	for _, next := range expected {
 		nextToken = lexer.Next()
 		assert.Equal(t, nextToken.Lexeme, next, unexpectedTokenError)
@@ -214,10 +217,4 @@ func TestNew(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, expected, scan.Stream, "unable to instantiate")
-}
-
-func TestNew_EmptyInput(t *testing.T) {
-	input := ""
-	_, err := scanner.New(input)
-	assert.NotNil(t, err)
 }

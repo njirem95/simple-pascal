@@ -36,7 +36,6 @@ Every set ends with the EOF (End-of-file) token.
 package scanner
 
 import (
-	"errors"
 	"github.com/njirem95/simple-pascal/pkg/scanner/token"
 	"strings"
 )
@@ -144,11 +143,8 @@ func (s *Scanner) Advance() {
 	}
 }
 
-// New creates the struct Scanner. Returns an error if the stream size is zero.
+// New creates the struct Scanner.
 func New(stream string) (*Scanner, error) {
-	if len(stream) == 0 {
-		return nil, errors.New("input stream is empty")
-	}
 	scanner := &Scanner{}
 	scanner.Stream = stream
 	scanner.Current = string(stream[0])
