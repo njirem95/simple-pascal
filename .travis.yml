@@ -4,5 +4,5 @@ go:
   - 1.11
 install: true
 script:
-  go get github.com/stretchr/testify/assert
-  go test ./...
+  - go get github.com/stretchr/testify/assert
+  - go test ./...
