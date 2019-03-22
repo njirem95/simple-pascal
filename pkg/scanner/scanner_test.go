@@ -17,7 +17,7 @@ func TestScanner_Advance(t *testing.T) {
 	assert.Nil(t, err)
 
 	for _, current := range expected {
-		assert.Equal(t, current, lexer.Current, "invalid lexeme")
+		assert.Equal(t, current, lexer.Current, unexpectedTokenError)
 		lexer.Advance()
 	}
 }
