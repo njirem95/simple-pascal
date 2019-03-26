@@ -276,6 +276,8 @@ func TestParser_Factor(t *testing.T) {
 func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
+	defer ctrl.Finish()
+	
 	m := mock_scanner.NewMockScanner(ctrl)
 	expected := token.Token{
 		Type: token.Add,
@@ -312,6 +314,8 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 
 func TestParser_Factor_TestUnarySub(t *testing.T) {
 	ctrl := gomock.NewController(t)
+
+	defer ctrl.Finish()
 
 	m := mock_scanner.NewMockScanner(ctrl)
 	expected := token.Token{
