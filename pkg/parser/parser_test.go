@@ -274,11 +274,28 @@ func TestParser_Factor(t *testing.T) {
 }
 
 func TestParser_Factor_TestUnaryAdd(t *testing.T) {
-	lexer, err := scanner.New("+20")
-	if err != nil {
-		t.Error(err)
+	ctrl := gomock.NewController(t)
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	expected := token.Token{
+		Type: token.Add,
+		Lexeme: "+",
 	}
-	parser := parser.New(lexer)
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	parser := parser.New(m)
+	expected = token.Token{
+		Lexeme: "20",
+		Type: token.Int,
+	}
+	m.
+		EXPECT().
+		Next().
+		AnyTimes().
+		Return(expected)
 	expression, err := parser.Factor()
 	if err != nil {
 		t.Error(err)
@@ -286,21 +303,11 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 
 	// sanity check
 	node, ok := expression.(*ast.UnaryOp)
-	if !ok {
-		t.Fatal("expected *ast.UnaryOp")
-	}
+	assert.True(t, ok)
 
-	if node.Expression.Lexeme != "20" {
-		t.Error("expected lexeme to be 20")
-	}
-
-	expected := token.Token{
-		Type:   token.Add,
-		Lexeme: "+",
-	}
-	if !reflect.DeepEqual(expected, node.Operator) {
-		t.Error("expected token to be token.Add")
-	}
+	assert.Equal(t, "20", node.Expression.Lexeme)
+	assert.Equal(t, "+", node.Operator.Lexeme)
+	assert.Equal(t, token.Add, node.Operator.Type)
 }
 
 func TestParser_Factor_TestUnarySub(t *testing.T) {
