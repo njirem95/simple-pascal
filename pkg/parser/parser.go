@@ -14,7 +14,7 @@ var (
 )
 
 type Parser struct {
-	lexer        *scanner.Scanner
+	lexer        scanner.Scanner
 	currentToken token.Token
 }
 
@@ -175,7 +175,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 }
 
 // New creates the struct Parser.
-func New(lexer *scanner.Scanner) *Parser {
+func New(lexer scanner.Scanner) *Parser {
 	parser := &Parser{}
 	parser.lexer = lexer
 	parser.currentToken = parser.lexer.Next()

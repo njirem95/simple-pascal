@@ -1,55 +1,110 @@
 package parser_test
 
 import (
+	"github.com/golang/mock/gomock"
 	"github.com/njirem95/simple-pascal/pkg/ast"
 	"github.com/njirem95/simple-pascal/pkg/parser"
 	"github.com/njirem95/simple-pascal/pkg/scanner"
 	"github.com/njirem95/simple-pascal/pkg/scanner/token"
+	"github.com/njirem95/simple-pascal/test/mock/scanner"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
 
 func TestParser_Consume(t *testing.T) {
-	lexer, err := scanner.New("1 + 1 - 1 * 3")
-	if err != nil {
-		t.Error(err)
+	ctrl := gomock.NewController(t)
+
+	defer ctrl.Finish()
+
+	m := mock_scanner.NewMockScanner(ctrl)
+
+	expected := token.Token{
+		Type: token.Int,
 	}
-	parser := parser.New(lexer)
-	if err != nil {
-		t.Error(err)
+
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	parser := parser.New(m)
+
+	expected = token.Token{
+		Type: token.Add,
 	}
-	err = parser.Consume(token.Int)
-	if err != nil {
-		t.Error("failed to consume integer")
+
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Int))
+
+	expected = token.Token{
+		Type: token.Int,
 	}
-	err = parser.Consume(token.Add)
-	if err != nil {
-		t.Error("failed to consume addition operator")
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Add))
+
+	expected = token.Token{
+		Type: token.Sub,
 	}
-	err = parser.Consume(token.Int)
-	if err != nil {
-		t.Error("failed to consume integer")
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Int))
+
+	expected = token.Token{
+		Type: token.Int,
 	}
-	err = parser.Consume(token.Sub)
-	if err != nil {
-		t.Error("failed to consume subtraction operator")
+
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Sub))
+
+	expected = token.Token{
+		Type: token.Mul,
 	}
-	err = parser.Consume(token.Int)
-	if err != nil {
-		t.Error("failed to consume integer")
+
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Int))
+
+	expected = token.Token{
+		Type: token.Int,
 	}
-	err = parser.Consume(token.Mul)
-	if err != nil {
-		t.Error("failed to consume multiplication operator")
+
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Mul))
+
+	expected = token.Token{
+		Type: token.EOF,
 	}
-	err = parser.Consume(token.Int)
-	if err != nil {
-		t.Error("failed to consume integer")
-	}
-	err = parser.Consume(token.EOF)
-	if err != nil {
-		t.Error("failed to consume EOF")
-	}
+
+	m.
+		EXPECT().
+		Next().
+		AnyTimes().
+		Return(expected)
+
+	assert.Nil(t, parser.Consume(token.Int))
 }
 
 func TestParser_Expr(t *testing.T) {

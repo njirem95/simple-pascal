@@ -40,15 +40,21 @@ import (
 	"strings"
 )
 
+type Scanner interface {
+	Next() token.Token
+	Peek() string
+	Advance()
+}
+
 // Scanner is the type that contains functions regarding tokenization of the input stream.
-type Scanner struct {
+type scanner struct {
 	Stream   string
 	Position int
 	Current  string
 }
 
 // Next returns the next token from the input stream.
-func (s *Scanner) Next() token.Token {
+func (s *scanner) Next() token.Token {
 	for s.Current != "" {
 		if s.Current == " " {
 			s.Advance()
@@ -126,7 +132,7 @@ func (s *Scanner) Next() token.Token {
 
 // Peek retrieves the next lexeme from the input stream without advancing the current position
 // of the input stream.
-func (s *Scanner) Peek() string {
+func (s *scanner) Peek() string {
 	if s.Position+1 >= len(s.Stream) {
 		return ""
 	}
@@ -134,7 +140,7 @@ func (s *Scanner) Peek() string {
 }
 
 // Advance changes the current position and assigns the new position to s.Current.
-func (s *Scanner) Advance() {
+func (s *scanner) Advance() {
 	if s.Position+1 >= len(s.Stream) {
 		s.Current = ""
 	} else {
@@ -144,8 +150,8 @@ func (s *Scanner) Advance() {
 }
 
 // New creates the struct Scanner.
-func New(stream string) (*Scanner, error) {
-	scanner := &Scanner{}
+func New(stream string) (*scanner, error) {
+	scanner := &scanner{}
 	scanner.Stream = stream
 	scanner.Current = string(stream[0])
 	return scanner, nil
