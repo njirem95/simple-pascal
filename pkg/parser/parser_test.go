@@ -277,10 +277,10 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	defer ctrl.Finish()
-	
+
 	m := mock_scanner.NewMockScanner(ctrl)
 	expected := token.Token{
-		Type: token.Add,
+		Type:   token.Add,
 		Lexeme: "+",
 	}
 	m.
@@ -291,7 +291,7 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	parser := parser.New(m)
 	expected = token.Token{
 		Lexeme: "20",
-		Type: token.Int,
+		Type:   token.Int,
 	}
 	m.
 		EXPECT().
@@ -319,7 +319,7 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 
 	m := mock_scanner.NewMockScanner(ctrl)
 	expected := token.Token{
-		Type: token.Sub,
+		Type:   token.Sub,
 		Lexeme: "-",
 	}
 	m.
@@ -330,7 +330,7 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 	parser := parser.New(m)
 	expected = token.Token{
 		Lexeme: "20",
-		Type: token.Int,
+		Type:   token.Int,
 	}
 	m.
 		EXPECT().
@@ -372,23 +372,84 @@ func TestParser_Factor_TestLParenExprRparen(t *testing.T) {
 			Lexeme: "20",
 		},
 	}
-	lexer, err := scanner.New("(1 * 20)")
-	if err != nil {
-		t.Error(err)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tok := token.Token{
+		Type:   token.Lparen,
+		Lexeme: "(",
 	}
-	parser := parser.New(lexer)
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	m.
+		EXPECT().
+		Next().
+		Return(tok)
+
+	parser := parser.New(m)
+
+	tok = token.Token{
+		Type:   token.Int,
+		Lexeme: "1",
+	}
+	before := m.
+		EXPECT().
+		Next().
+		Return(tok)
+
+	tok = token.Token{
+		Type:   token.Mul,
+		Lexeme: "*",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		After(before).
+		Return(tok)
+
+	tok = token.Token{
+		Type:   token.Int,
+		Lexeme: "20",
+	}
+	before = m.
+		EXPECT().
+		Next().
+		Return(tok).
+		After(before)
+
+	tok = token.Token{
+		Type:   token.Rparen,
+		Lexeme: ")",
+	}
+	before = m.
+		EXPECT().
+		Next().
+		Return(tok).
+		After(before)
+
+	tok = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		AnyTimes().
+		Return(tok).
+		After(before)
+
 	expression, err := parser.Factor()
-	if err != nil {
-		t.Error(err)
-	}
+	assert.Nil(t, err)
 
 	// sanity check
 	node, ok := expression.(*ast.BinOp)
-	if !ok {
-		t.Fatal("expected *ast.UnaryOp")
-	}
+	assert.True(t, ok)
 
-	if !reflect.DeepEqual(node, expected) {
-		t.Error("node does not equal expected")
-	}
+	assert.Equal(t, node.Left, expected.Left)
+	assert.Equal(t, node.Right, expected.Right)
+	assert.Equal(t, node.Operator.Type, expected.Operator.Type)
+	assert.Equal(t, node.Operator.Lexeme, expected.Operator.Lexeme)
 }
