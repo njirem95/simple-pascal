@@ -4,11 +4,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/njirem95/simple-pascal/pkg/ast"
 	"github.com/njirem95/simple-pascal/pkg/parser"
-	"github.com/njirem95/simple-pascal/pkg/scanner"
 	"github.com/njirem95/simple-pascal/pkg/scanner/token"
 	"github.com/njirem95/simple-pascal/test/mock/scanner"
 	"github.com/stretchr/testify/assert"
-	"reflect"
 	"testing"
 )
 
@@ -107,170 +105,45 @@ func TestParser_Consume(t *testing.T) {
 	assert.Nil(t, parser.Consume(token.Int))
 }
 
-func TestParser_Expr(t *testing.T) {
-	expected := []ast.BinOp{
-		{
-			Left: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "20",
-				},
-				Lexeme: "20",
-			},
-			Operator: token.Token{
-				Type:   token.Add,
-				Lexeme: "+",
-			},
-			Right: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "15",
-				},
-				Lexeme: "15",
-			},
-		},
-		{
-			Left: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "20",
-				},
-				Lexeme: "20",
-			},
-			Operator: token.Token{
-				Type:   token.Sub,
-				Lexeme: "-",
-			},
-			Right: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "15",
-				},
-				Lexeme: "15",
-			},
-		},
-	}
-	inputs := [2]string{"20 + 15", "20 - 15"}
-	for index, input := range inputs {
-		lexer, err := scanner.New(input)
-		if err != nil {
-			t.Error(err)
-		}
-		parser := parser.New(lexer)
-		expression, err := parser.Expr()
-		if err != nil {
-			t.Error(err)
-		}
-
-		// sanity check
-		operation, ok := expression.(*ast.BinOp)
-		if !ok {
-			t.Fatalf("expected *ast.BinOp, got %s", reflect.TypeOf(expression))
-		}
-
-		// Take the memory location of expected[index] and check if it matches with the expression.
-		if !reflect.DeepEqual(&expected[index], operation) {
-			t.Error("binary operation does not match expected")
-		}
-	}
-}
-
-func TestParser_Term(t *testing.T) {
-	expected := []ast.BinOp{
-		{
-			Left: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "20",
-				},
-				Lexeme: "20",
-			},
-			Operator: token.Token{
-				Type:   token.Mul,
-				Lexeme: "*",
-			},
-			Right: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "5",
-				},
-				Lexeme: "5",
-			},
-		},
-		{
-			Left: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "20",
-				},
-				Lexeme: "20",
-			},
-			Operator: token.Token{
-				Type:   token.Div,
-				Lexeme: "/",
-			},
-			Right: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "5",
-				},
-				Lexeme: "5",
-			},
-		},
-	}
-	inputs := [2]string{"20 * 5", "20 / 5"}
-	for index, input := range inputs {
-		lexer, err := scanner.New(input)
-		if err != nil {
-			t.Error(err)
-		}
-		parser := parser.New(lexer)
-		expression, err := parser.Term()
-		if err != nil {
-			t.Error(err)
-		}
-
-		// sanity check
-		operation, ok := expression.(*ast.BinOp)
-		if !ok {
-			t.Fatalf("expected *ast.BinOp, got %s", reflect.TypeOf(expression))
-		}
-
-		// Take the memory location of expected[index] and check if it matches with the expression.
-		if !reflect.DeepEqual(&expected[index], operation) {
-			t.Error("binary operation does not match expected")
-		}
-	}
-}
-
 func TestParser_Factor(t *testing.T) {
-	lexer, err := scanner.New("20")
-	if err != nil {
-		t.Error(err)
-	}
-	parser := parser.New(lexer)
-	expression, err := parser.Factor()
-	if err != nil {
-		t.Error(err)
-	}
+	ctrl := gomock.NewController(t)
 
-	// sanity check
-	num, ok := expression.(*ast.Num)
-	if !ok {
-		t.Fatalf("expected *ast.Num, got %s", reflect.TypeOf(expression))
-	}
+	defer ctrl.Finish()
 
-	if num.Lexeme != "20" {
-		t.Errorf("expected lexeme to be 20, got %s instead", num.Lexeme)
-	}
+	m := mock_scanner.NewMockScanner(ctrl)
 
 	expected := token.Token{
 		Type:   token.Int,
 		Lexeme: "20",
 	}
-	if !reflect.DeepEqual(expected, num.Token) {
-		t.Error("expected does not equal num.Token")
+
+	m.
+		EXPECT().
+		Next().
+		Return(expected)
+
+	parser := parser.New(m)
+
+	// I'm expecting Next() to be returning EOF from now on
+	expected = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
 	}
+	m.EXPECT().
+		Next().
+		AnyTimes().
+		Return(expected)
+
+	expression, err := parser.Factor()
+	assert.Nil(t, err)
+
+	// sanity check
+	num, ok := expression.(*ast.Num)
+	assert.True(t, ok)
+
+	assert.Equal(t, num.Token.Type, token.Int)
+	assert.Equal(t, num.Token.Lexeme, "20")
+	assert.Equal(t, num.Lexeme, "20")
 }
 
 func TestParser_Factor_TestUnaryAdd(t *testing.T) {
@@ -450,6 +323,5 @@ func TestParser_Factor_TestLParenExprRparen(t *testing.T) {
 
 	assert.Equal(t, node.Left, expected.Left)
 	assert.Equal(t, node.Right, expected.Right)
-	assert.Equal(t, node.Operator.Type, expected.Operator.Type)
-	assert.Equal(t, node.Operator.Lexeme, expected.Operator.Lexeme)
+	assert.Equal(t, node.Operator, expected.Operator)
 }
