@@ -199,7 +199,11 @@ func TestParser_Expr_Addition(t *testing.T) {
 		Lexeme: "15",
 	}
 
-	after = m.EXPECT().Next().Return(currentToken).After(after)
+	after = m.
+		EXPECT().
+		Next().
+		Return(currentToken).
+		After(after)
 
 	currentToken = token.Token{
 		Type:   token.EOF,
@@ -304,12 +308,158 @@ func TestParser_Expr_Subtraction(t *testing.T) {
 func TestParser_Term_Multiplication(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+
+	expected := &ast.BinOp{
+		Left: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "20",
+			},
+			Lexeme: "20",
+		},
+		Operator: token.Token{
+			Type:   token.Mul,
+			Lexeme: "*",
+		},
+		Right: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "15",
+			},
+			Lexeme: "15",
+		},
+	}
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	currentToken := token.Token{
+		Type:   token.Int,
+		Lexeme: "20",
+	}
+	m.
+		EXPECT().
+		Next().
+		Return(currentToken)
+
+	parser := parser.New(m)
+
+	currentToken = token.Token{
+		Type:   token.Mul,
+		Lexeme: "*",
+	}
+
+	// Creating mock
+	after := m.
+		EXPECT().
+		Next().
+		Return(currentToken)
+
+	currentToken = token.Token{
+		Type:   token.Int,
+		Lexeme: "15",
+	}
+
+	after = m.EXPECT().Next().Return(currentToken).After(after)
+
+	currentToken = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		AnyTimes().
+		Return(currentToken)
+
+	expression, err := parser.Term()
+	assert.Nil(t, err)
+
+	// sanity check
+	operation, ok := expression.(*ast.BinOp)
+	assert.True(t, ok)
+
+	assert.Equal(t, expected.Operator, operation.Operator)
+	assert.Equal(t, expected.Right, operation.Right)
+	assert.Equal(t, expected.Left, operation.Left)
 }
 
 // TestParser_Expr_Addition tests the binary operation division.
 func TestParser_Term_Division(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+
+	expected := &ast.BinOp{
+		Left: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "20",
+			},
+			Lexeme: "20",
+		},
+		Operator: token.Token{
+			Type:   token.Div,
+			Lexeme: "/",
+		},
+		Right: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "15",
+			},
+			Lexeme: "15",
+		},
+	}
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	currentToken := token.Token{
+		Type:   token.Int,
+		Lexeme: "20",
+	}
+	m.
+		EXPECT().
+		Next().
+		Return(currentToken)
+
+	parser := parser.New(m)
+
+	currentToken = token.Token{
+		Type:   token.Div,
+		Lexeme: "/",
+	}
+
+	// Creating mock
+	after := m.EXPECT().Next().Return(currentToken)
+
+	currentToken = token.Token{
+		Type:   token.Int,
+		Lexeme: "15",
+	}
+
+	after = m.
+		EXPECT().
+		Next().
+		Return(currentToken).After(after)
+
+	currentToken = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		AnyTimes().
+		Return(currentToken)
+
+	expression, err := parser.Expr()
+	assert.Nil(t, err)
+
+	// sanity check
+	operation, ok := expression.(*ast.BinOp)
+	assert.True(t, ok)
+
+	assert.Equal(t, expected.Operator, operation.Operator)
+	assert.Equal(t, expected.Right, operation.Right)
+	assert.Equal(t, expected.Left, operation.Left)
 }
 
 // TestParser_Factor_TestUnaryAdd tests the unary add operator.
@@ -338,6 +488,7 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 		Next().
 		AnyTimes().
 		Return(expected)
+
 	expression, err := parser.Factor()
 	if err != nil {
 		t.Error(err)
@@ -378,6 +529,7 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 		Next().
 		AnyTimes().
 		Return(expected)
+
 	expression, err := parser.Factor()
 	if err != nil {
 		t.Error(err)
