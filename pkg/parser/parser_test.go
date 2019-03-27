@@ -10,6 +10,7 @@ import (
 	"testing"
 )
 
+// TestParser_Consume tests the consumption of tokens.
 func TestParser_Consume(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
@@ -105,7 +106,8 @@ func TestParser_Consume(t *testing.T) {
 	assert.Nil(t, parser.Consume(token.Int))
 }
 
-func TestParser_Factor(t *testing.T) {
+// TestParser_Factor_Integer tests the consumption of integers.
+func TestParser_Factor_Integer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	defer ctrl.Finish()
@@ -146,6 +148,101 @@ func TestParser_Factor(t *testing.T) {
 	assert.Equal(t, num.Lexeme, "20")
 }
 
+// TestParser_Expr_Addition tests the binary operation addition.
+func TestParser_Expr_Addition(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	expected := &ast.BinOp{
+		Left: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "20",
+			},
+			Lexeme: "20",
+		},
+		Operator: token.Token{
+			Type:   token.Add,
+			Lexeme: "+",
+		},
+		Right: &ast.Num{
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "15",
+			},
+			Lexeme: "15",
+		},
+	}
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	currentToken := token.Token{
+		Type:   token.Int,
+		Lexeme: "20",
+	}
+	m.
+		EXPECT().
+		Next().
+		Return(currentToken)
+
+	parser := parser.New(m)
+
+	currentToken = token.Token{
+		Type:   token.Add,
+		Lexeme: "+",
+	}
+
+	// Creating mock
+	after := m.EXPECT().Next().Return(currentToken)
+
+	currentToken = token.Token{
+		Type:   token.Int,
+		Lexeme: "15",
+	}
+
+	after = m.EXPECT().Next().Return(currentToken).After(after)
+
+	currentToken = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		AnyTimes().
+		Return(currentToken)
+
+	expression, err := parser.Expr()
+	assert.Nil(t, err)
+
+	// sanity check
+	operation, ok := expression.(*ast.BinOp)
+	assert.True(t, ok)
+
+	assert.Equal(t, expected.Operator, operation.Operator)
+	assert.Equal(t, expected.Right, operation.Right)
+	assert.Equal(t, expected.Left, operation.Left)
+}
+
+// TestParser_Expr_Addition tests the binary operation subtraction.
+func TestParser_Expr_Subtraction(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+}
+
+// TestParser_Expr_Addition tests the binary operation multiplication.
+func TestParser_Term_Multiplication(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+}
+
+// TestParser_Expr_Addition tests the binary operation division.
+func TestParser_Term_Division(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+}
+
+// TestParser_Factor_TestUnaryAdd tests the unary add operator.
 func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
@@ -185,6 +282,7 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 	assert.Equal(t, token.Add, node.Operator.Type)
 }
 
+// TestParser_Factor_TestUnarySub tests the unary sub operator.
 func TestParser_Factor_TestUnarySub(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
@@ -224,6 +322,7 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 	assert.Equal(t, token.Sub, node.Operator.Type)
 }
 
+// TestParser_Factor_TestLParenExprRparen tests the 'lparen expr rparen' expression.
 func TestParser_Factor_TestLParenExprRparen(t *testing.T) {
 	expected := &ast.BinOp{
 		Left: &ast.Num{
