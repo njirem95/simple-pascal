@@ -38,12 +38,7 @@ func (p *Parser) Expr() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		// We expect left to be of type num.
-		left, ok := node.(*ast.Num)
-		if !ok {
-			return nil, errors.New("expected type num")
-		}
+		left := node
 
 		// Get the value on the right
 		node, err = p.Term()
@@ -51,10 +46,7 @@ func (p *Parser) Expr() (ast.Expr, error) {
 			return nil, err
 		}
 
-		right, ok := node.(*ast.Num)
-		if !ok {
-			return nil, errors.New("expected type num")
-		}
+		right := node
 
 		node = &ast.BinOp{
 			Left:     left,
@@ -79,21 +71,12 @@ func (p *Parser) Term() (ast.Expr, error) {
 			return nil, err
 		}
 
-		// We expect left to be of type num.
-		left, ok := node.(*ast.Num)
-		if !ok {
-			return nil, errors.New("expected type num")
-		}
+		left := node
 
 		// Get the value on the right
-		node, err = p.Factor()
+		right, err := p.Factor()
 		if err != nil {
 			return nil, err
-		}
-
-		right, ok := node.(*ast.Num)
-		if !ok {
-			return nil, errors.New("expected type num")
 		}
 
 		node = &ast.BinOp{

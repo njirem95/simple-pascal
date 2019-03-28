@@ -1,9 +1,11 @@
 package ast
 
-import "github.com/njirem95/simple-pascal/pkg/scanner/token"
+import (
+	"github.com/njirem95/simple-pascal/pkg/scanner/token"
+)
 
 type BinOp struct {
-	Left     *Num
+	Left     interface{}
 	Operator token.Token
-	Right    *Num
+	Right    interface{}
 }
