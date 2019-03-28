@@ -78,39 +78,6 @@ func TestParser_Expr(t *testing.T) {
 			},
 		},
 	}
-	/*expected := &ast.BinOp{
-		Left: &ast.Num{
-			Token: token.Token{
-				Type:   token.Int,
-				Lexeme: "10",
-			},
-			Lexeme: "10",
-		},
-		Operator: token.Token{
-			Type:   token.Add,
-			Lexeme: "+",
-		},
-		Right: &ast.BinOp{
-			Left: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "4",
-				},
-				Lexeme: "5",
-			},
-			Operator: token.Token{
-				Type:   token.Sub,
-				Lexeme: "-",
-			},
-			Right: &ast.Num{
-				Token: token.Token{
-					Type:   token.Int,
-					Lexeme: "3",
-				},
-				Lexeme: "3",
-			},
-		},
-	}*/
 
 	lexer, err := scanner.New(expr)
 	assert.Nil(t, err)
