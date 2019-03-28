@@ -494,11 +494,14 @@ func TestParser_Factor_TestUnaryAdd(t *testing.T) {
 		t.Error(err)
 	}
 
-	// sanity check
+	// sanity checks
 	node, ok := expression.(*ast.UnaryOp)
 	assert.True(t, ok)
 
-	assert.Equal(t, "20", node.Expression.Lexeme)
+	num, ok := node.Expression.(*ast.Num)
+	assert.True(t, ok)
+
+	assert.Equal(t, "20", num.Lexeme)
 	assert.Equal(t, "+", node.Operator.Lexeme)
 	assert.Equal(t, token.Add, node.Operator.Type)
 }
@@ -535,11 +538,14 @@ func TestParser_Factor_TestUnarySub(t *testing.T) {
 		t.Error(err)
 	}
 
-	// sanity check
+	// sanity checks
 	node, ok := expression.(*ast.UnaryOp)
 	assert.True(t, ok)
 
-	assert.Equal(t, "20", node.Expression.Lexeme)
+	num, ok := node.Expression.(*ast.Num)
+	assert.True(t, ok)
+
+	assert.Equal(t, "20", num.Lexeme)
 	assert.Equal(t, "-", node.Operator.Lexeme)
 	assert.Equal(t, token.Sub, node.Operator.Type)
 }

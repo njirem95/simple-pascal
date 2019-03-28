@@ -10,7 +10,6 @@ import (
 var (
 	consumeTokenError = errors.New("unable to consume token")
 	endReachedError   = errors.New("reached end of recursion")
-	unaryNumError     = errors.New("expected unary child to be a num")
 )
 
 type Parser struct {
@@ -104,11 +103,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		child, ok := factor.(*ast.Num)
-		if !ok {
-			return nil, unaryNumError
-		}
-		node.Expression = child
+		node.Expression = factor
 		return node, nil
 	case token.Sub:
 		node := &ast.UnaryOp{
@@ -122,11 +117,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		child, ok := factor.(*ast.Num)
-		if !ok {
-			return nil, unaryNumError
-		}
-		node.Expression = child
+		node.Expression = factor
 		return node, nil
 	case token.Int:
 		node := &ast.Num{
