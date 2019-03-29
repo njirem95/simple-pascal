@@ -1,13 +1,35 @@
 // Package visitor is responsible for interpreting the abstract syntax tree
 package visitor
 
-type Visitor struct {
+import (
+	"github.com/njirem95/simple-pascal/pkg/ast"
+)
+
+type Visitor interface {
+	Visit(expression ast.Expr)
 }
 
-func (v *Visitor) Visit() {
-	// Get node
+type visitor struct {
+}
 
-	// Visit node
+func (v *visitor) Visit(expression ast.Expr) ast.Expr {
+	switch expr := expression.(type) {
+	case *ast.BinOp:
+		node := BinOpVisitor{}
+		visit, _ := node.Visit(expr)
+		return visit
+	case *ast.Num:
+		node := NumVisitor{}
+		visit, _ := node.Visit(expr)
+		return visit
+	case *ast.UnaryOp:
+		// Use the UnaryOp visitor
+		break
+	}
 
-	// Return an error if the node hasn't been found
+	return "nope"
+}
+
+func New() *visitor {
+	return &visitor{}
 }
