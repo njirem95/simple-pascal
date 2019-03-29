@@ -5,14 +5,10 @@ import (
 	"github.com/njirem95/simple-pascal/pkg/ast"
 )
 
-type Visitor interface {
-	Visit(expression ast.Expr)
+type Visitor struct {
 }
 
-type visitor struct {
-}
-
-func (v *visitor) Visit(expression ast.Expr) ast.Expr {
+func (v *Visitor) Visit(expression ast.Expr) ast.Expr {
 	switch expr := expression.(type) {
 	case *ast.BinOp:
 		node := BinOpVisitor{}
@@ -30,6 +26,6 @@ func (v *visitor) Visit(expression ast.Expr) ast.Expr {
 	return "nope"
 }
 
-func New() *visitor {
-	return &visitor{}
+func New() *Visitor {
+	return &Visitor{}
 }
