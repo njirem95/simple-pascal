@@ -25,7 +25,3 @@ func (v *Visitor) Visit(expression ast.Expr) ast.Expr {
 
 	return "nope"
 }
-
-func New() *Visitor {
-	return &Visitor{}
-}

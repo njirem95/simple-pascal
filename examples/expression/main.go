@@ -23,7 +23,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		visitor := visitor.New()
+		visitor := visitor.Visitor{}
 		result := visitor.Visit(expression)
 
 		fmt.Println(result) // 4 (duh)

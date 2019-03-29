@@ -10,7 +10,7 @@ type BinOpVisitor struct {
 }
 
 func (b *BinOpVisitor) Visit(expression *ast.BinOp) (int, error) {
-	visitor := New()
+	visitor := Visitor{}
 
 	node := visitor.Visit(expression.Left)
 	left, ok := node.(int)

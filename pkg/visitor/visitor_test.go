@@ -32,6 +32,6 @@ func Test_Visit_BinOp(t *testing.T) {
 		},
 	}
 
-	visitor := visitor.New()
+	visitor := visitor.Visitor{}
 	assert.Equal(t, expected, visitor.Visit(input))
 }
