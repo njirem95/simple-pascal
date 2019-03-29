@@ -19,8 +19,9 @@ func (v *Visitor) Visit(expression ast.Expr) ast.Expr {
 		visit, _ := node.Visit(expr)
 		return visit
 	case *ast.UnaryOp:
-		// Use the UnaryOp visitor
-		break
+		node := UnaryVisitor{}
+		visit, _ := node.Visit(expr)
+		return visit
 	}
 
 	return "nope"
