@@ -26,7 +26,7 @@ func main() {
 		visitor := visitor.Visitor{}
 		result := visitor.Visit(expression)
 
-		fmt.Println(result) // 4 (duh)
+		fmt.Println(result)
 	}
 
 }
