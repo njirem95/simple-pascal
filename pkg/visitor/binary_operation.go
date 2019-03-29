@@ -1,9 +1,9 @@
 package visitor
 
 import (
+	"errors"
 	"github.com/njirem95/simple-pascal/pkg/ast"
 	"github.com/njirem95/simple-pascal/pkg/scanner/token"
-	"github.com/pkg/errors"
 )
 
 type BinOpVisitor struct {
