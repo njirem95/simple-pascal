@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	inputs := [6]string{"2", "2 + 2", "2 + 2 * 4", "(2 + 2) * 4", "6 - - - + - 4", "6 - - - + - (3 + 4) - +1"}
+	inputs := []string{"2", "1024 - 1022", "2 + 2 * 4", "(2 + 2) * 4", "6 - - - + - 4", "6 - - - + - (3 + 4) - +1"}
 	for _, input := range inputs {
 		lexer, err := scanner.New(input)
 		if err != nil {
