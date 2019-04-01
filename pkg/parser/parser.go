@@ -52,7 +52,6 @@ func (p *Parser) Expr() (ast.Expr, error) {
 			Operator: operator,
 			Right:    right,
 		}
-		return node, nil
 	}
 	return node, nil
 }
@@ -77,13 +76,11 @@ func (p *Parser) Term() (ast.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		node = &ast.BinOp{
 			Left:     left,
 			Operator: operator,
 			Right:    right,
 		}
-		return node, nil
 	}
 	return node, nil
 }

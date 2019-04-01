@@ -109,7 +109,7 @@ func (s *scanner) Next() token.Token {
 			}
 		}
 
-		if s.Current >= "0" {
+		if s.Current >= "0" && s.Current <= "9" {
 			var sb strings.Builder
 			sb.WriteString(s.Current)
 			for s.Peek() >= "0" {
