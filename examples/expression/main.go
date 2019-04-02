@@ -24,8 +24,10 @@ func main() {
 		}
 
 		visitor := visitor.Visitor{}
-		result := visitor.Visit(expression)
-
+		result, err := visitor.Visit(expression)
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Println(result)
 	}
 

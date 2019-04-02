@@ -2,37 +2,28 @@
 package visitor
 
 import (
+	"errors"
 	"github.com/njirem95/simple-pascal/pkg/ast"
-	"log"
 )
 
 type Visitor struct {
 }
 
-func (v *Visitor) Visit(expression ast.Expr) ast.Expr {
+func (v *Visitor) Visit(expression ast.Expr) (ast.Expr, error) {
 	switch expr := expression.(type) {
 	case *ast.BinOp:
 		node := BinOpVisitor{}
 		visit, err := node.Visit(expr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return visit
+		return visit, err
 	case *ast.Num:
 		node := NumVisitor{}
 		visit, err := node.Visit(expr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return visit
+		return visit, err
 	case *ast.UnaryOp:
 		node := UnaryVisitor{}
 		visit, err := node.Visit(expr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return visit
+		return visit, err
 	}
 
-	return "nope"
+	return nil, errors.New("visitor not found")
 }

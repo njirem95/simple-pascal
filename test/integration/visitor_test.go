@@ -31,6 +31,9 @@ func TestVisitor_Expression(t *testing.T) {
 		assert.Nil(t, err)
 
 		visitor := visitor.Visitor{}
-		assert.Equal(t, result, visitor.Visit(expression))
+		visit, err := visitor.Visit(expression)
+		assert.Nil(t, err)
+
+		assert.Equal(t, result, visit)
 	}
 }
