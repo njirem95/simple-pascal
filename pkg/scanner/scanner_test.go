@@ -196,6 +196,109 @@ func TestScanner_Next_WithParentheses(t *testing.T) {
 	}
 }
 
+func TestNew_Identifier(t *testing.T) {
+	input := "CooL"
+	expected := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "cool",
+	}
+
+	lexer, err := scanner.New(input)
+	assert.Nil(t, err)
+
+	next := lexer.Next()
+	assert.Equal(t, expected, next)
+}
+
+func TestNew_BeginAndEndToken(t *testing.T) {
+	input := "BeGiN eNd"
+	expected := token.Token{
+		Type:   token.Begin,
+		Lexeme: "begin",
+	}
+
+	lexer, err := scanner.New(input)
+	assert.Nil(t, err)
+
+	next := lexer.Next()
+	assert.Equal(t, expected, next)
+
+	next = lexer.Next()
+	expected = token.Token{
+		Type:   token.End,
+		Lexeme: "end",
+	}
+
+	assert.Equal(t, expected, next)
+}
+
+func TestNew_Variable(t *testing.T) {
+	input := "aAp := 12"
+	lexer, err := scanner.New(input)
+	assert.Nil(t, err)
+
+	expected := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "aap",
+	}
+	next := lexer.Next()
+	assert.Equal(t, expected, next)
+
+	expected = token.Token{
+		Type:   token.Assign,
+		Lexeme: ":=",
+	}
+	next = lexer.Next()
+
+	assert.Equal(t, expected, next)
+}
+
+func TestNew_Semi(t *testing.T) {
+	input := "OkE;"
+	lexer, err := scanner.New(input)
+
+	assert.Nil(t, err)
+
+	expected := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "oke",
+	}
+	next := lexer.Next()
+	assert.Equal(t, expected, next)
+
+	expected = token.Token{
+		Type:   token.Semi,
+		Lexeme: ";",
+	}
+
+	next = lexer.Next()
+
+	assert.Equal(t, expected, next)
+}
+
+func TestNew_Dot(t *testing.T) {
+	input := "okE."
+	lexer, err := scanner.New(input)
+
+	assert.Nil(t, err)
+
+	expected := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "oke",
+	}
+	next := lexer.Next()
+	assert.Equal(t, expected, next)
+
+	expected = token.Token{
+		Type:   token.Dot,
+		Lexeme: ".",
+	}
+
+	next = lexer.Next()
+
+	assert.Equal(t, expected, next)
+}
+
 func TestNew_Peek(t *testing.T) {
 	input := "15 + 2"
 	expected := []string{"+", "2", ""}

@@ -60,6 +60,65 @@ func (s *scanner) Next() token.Token {
 			s.Advance()
 			continue
 		}
+		if s.Current >= "a" && s.Current <= "z" || s.Current >= "A" && s.Current <= "Z" {
+			var sb strings.Builder
+			sb.WriteString(s.Current)
+
+			for s.Peek() >= "a" && s.Peek() <= "z" || s.Peek() >= "A" && s.Peek() <= "Z" {
+				sb.WriteString(s.Peek())
+				s.Advance()
+			}
+
+			result := strings.ToLower(sb.String())
+			var newToken token.Token
+			switch result {
+			case "begin":
+				newToken = token.Token{
+					Type: token.Begin,
+				}
+				break
+			case "end":
+				newToken = token.Token{
+					Type: token.End,
+				}
+				break
+			default:
+				newToken = token.Token{
+					Type: token.Identifier,
+				}
+				break
+			}
+
+			s.Advance()
+
+			newToken.Lexeme = result
+			return newToken
+		}
+
+		if s.Current == ":" && s.Peek() == "=" {
+			s.Advance()
+			s.Advance()
+			return token.Token{
+				Type:   token.Assign,
+				Lexeme: ":=",
+			}
+		}
+
+		if s.Current == "." {
+			s.Advance()
+			return token.Token{
+				Type:   token.Dot,
+				Lexeme: ".",
+			}
+		}
+
+		if s.Current == ";" {
+			s.Advance()
+			return token.Token{
+				Type:   token.Semi,
+				Lexeme: ";",
+			}
+		}
 
 		if s.Current == "+" {
 			s.Advance()
