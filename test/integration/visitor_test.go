@@ -11,7 +11,7 @@ import (
 // We'll be testing the integration of the visitor pattern. The visitor pattern
 // 'visits' the abstract syntax tree; therefore interpreting the expression.
 func TestVisitor_Expression(t *testing.T) {
-	inputs := make(map[string]int) // [ast.Expr] is the given input and int is the result
+	inputs := make(map[string]int)
 	inputs["2"] = 2
 	inputs["2 + 2"] = 4
 	inputs["9 * 2 - 2 + 4"] = 20
