@@ -652,3 +652,49 @@ func TestParser_Factor_TestLParenExprRparen(t *testing.T) {
 	assert.Equal(t, node.Right, expected.Right)
 	assert.Equal(t, node.Operator, expected.Operator)
 }
+
+func TestParser_Factor_Variable(t *testing.T) {
+	// "x := 12"
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	expected := &ast.Variable{
+		Name: "x",
+		Token: token.Token{
+			Type:   token.Identifier,
+			Lexeme: "x",
+		},
+	}
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	current := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "x",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(current)
+
+	parser := parser.New(m)
+
+	current = token.Token{
+		Type:   token.Assign,
+		Lexeme: ":=",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(current)
+
+	expr, err := parser.Factor()
+	assert.Nil(t, err)
+
+	// sanity check
+	variable, ok := expr.(*ast.Variable)
+	assert.True(t, ok)
+
+	assert.Equal(t, expected, variable)
+}

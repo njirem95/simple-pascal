@@ -141,6 +141,21 @@ func (p *Parser) Factor() (ast.Expr, error) {
 			return nil, err
 		}
 		return expr, nil
+	case token.Identifier:
+		node := &ast.Variable{
+			Name: p.currentToken.Lexeme,
+			Token: token.Token{
+				Type: token.Identifier,
+				Lexeme: p.currentToken.Lexeme,
+			},
+		}
+
+		err := p.Consume(token.Identifier)
+		if err != nil {
+			return nil, err
+		}
+
+		return node, nil
 	}
 	return nil, endReachedError
 }
