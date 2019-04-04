@@ -783,8 +783,8 @@ func TestParser_Statement_Empty(t *testing.T) {
 	expected := &ast.Empty{}
 
 	m := mock_scanner.NewMockScanner(ctrl)
-	current  := token.Token{
-		Type: token.EOF,
+	current := token.Token{
+		Type:   token.EOF,
 		Lexeme: "",
 	}
 

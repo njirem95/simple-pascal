@@ -25,6 +25,29 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
+// TODO create tests for StmtList function---this code is untested.
+func (p *Parser) StmtList() ([]ast.Statement, error) {
+	node, err := p.Statement()
+	if err != nil {
+		return nil, err
+	}
+
+	var statements []ast.Statement
+	statements = append(statements, node)
+
+	// Add the next statement to the list if the current token is a semicolon.
+	for p.currentToken.Type == token.Semi {
+		node, err := p.Statement()
+		if err != nil {
+			return nil, err
+		}
+
+		statements = append(statements, node)
+	}
+
+	return statements, nil
+}
+
 func (p *Parser) Statement() (ast.Statement, error) {
 	switch p.currentToken.Type {
 	case token.Identifier:
