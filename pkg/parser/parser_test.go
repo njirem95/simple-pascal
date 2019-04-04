@@ -698,3 +698,77 @@ func TestParser_Factor_Variable(t *testing.T) {
 
 	assert.Equal(t, expected, variable)
 }
+
+func TestParser_AssignmentStmt(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	expected := &ast.Assign{
+		Left: &ast.Variable{
+			Name: "x",
+			Token: token.Token{
+				Type:   token.Identifier,
+				Lexeme: "x",
+			},
+		},
+		Operator: token.Token{
+			Type:   token.Assign,
+			Lexeme: ":=",
+		},
+		Right: &ast.Num{
+			Lexeme: "2",
+			Token: token.Token{
+				Type:   token.Int,
+				Lexeme: "2",
+			},
+		},
+	}
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	current := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "x",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(current)
+
+	parser := parser.New(m)
+
+	current = token.Token{
+		Type:   token.Assign,
+		Lexeme: ":=",
+	}
+
+	before := m.EXPECT().Next().Return(current)
+
+	current = token.Token{
+		Type:   token.Int,
+		Lexeme: "2",
+	}
+
+	before = m.EXPECT().Next().Return(current).After(before)
+
+	current = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(current).
+		AnyTimes().
+		After(before)
+
+	result, err := parser.AssignmentStmt()
+	assert.Nil(t, err)
+
+	// sanity check
+	assignment, ok := result.(*ast.Assign)
+	assert.True(t, ok)
+
+	assert.Equal(t, expected, assignment)
+}

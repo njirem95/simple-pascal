@@ -25,6 +25,47 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
+func (p *Parser) AssignmentStmt() (ast.Expr, error) {
+	left, err := p.Variable()
+	if err != nil {
+		return nil, err
+	}
+	operator := p.currentToken
+	err = p.Consume(token.Assign)
+	if err != nil {
+		return nil, err
+	}
+	right, err := p.Expr()
+	if err != nil {
+		return nil, err
+	}
+
+	node := &ast.Assign{
+		Left:     left,
+		Operator: operator,
+		Right:    right,
+	}
+
+	return node, nil
+}
+
+func (p *Parser) Variable() (ast.Expr, error) {
+	node := &ast.Variable{
+		Name: p.currentToken.Lexeme,
+		Token: token.Token{
+			Type:   token.Identifier,
+			Lexeme: p.currentToken.Lexeme,
+		},
+	}
+
+	err := p.Consume(token.Identifier)
+	if err != nil {
+		return nil, err
+	}
+
+	return node, nil
+}
+
 func (p *Parser) Expr() (ast.Expr, error) {
 	node, err := p.Term()
 	if err != nil {
@@ -142,20 +183,7 @@ func (p *Parser) Factor() (ast.Expr, error) {
 		}
 		return expr, nil
 	case token.Identifier:
-		node := &ast.Variable{
-			Name: p.currentToken.Lexeme,
-			Token: token.Token{
-				Type: token.Identifier,
-				Lexeme: p.currentToken.Lexeme,
-			},
-		}
-
-		err := p.Consume(token.Identifier)
-		if err != nil {
-			return nil, err
-		}
-
-		return node, nil
+		return p.Variable()
 	}
 	return nil, endReachedError
 }
