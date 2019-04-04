@@ -25,7 +25,20 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
-func (p *Parser) AssignmentStmt() (ast.Expr, error) {
+func (p *Parser) Statement() (ast.Statement, error) {
+	switch p.currentToken.Type {
+	case token.Identifier:
+		return p.AssignmentStmt()
+	default:
+		return p.Empty()
+	}
+}
+
+func (p *Parser) Empty() (*ast.Empty, error) {
+	return &ast.Empty{}, nil
+}
+
+func (p *Parser) AssignmentStmt() (*ast.Assign, error) {
 	left, err := p.Variable()
 	if err != nil {
 		return nil, err
@@ -49,7 +62,7 @@ func (p *Parser) AssignmentStmt() (ast.Expr, error) {
 	return node, nil
 }
 
-func (p *Parser) Variable() (ast.Expr, error) {
+func (p *Parser) Variable() (*ast.Variable, error) {
 	node := &ast.Variable{
 		Name: p.currentToken.Lexeme,
 		Token: token.Token{
@@ -71,7 +84,7 @@ func (p *Parser) Expr() (ast.Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Check if current token is of type addition or subtraction
+
 	for p.currentToken.Type == token.Add || p.currentToken.Type == token.Sub {
 		operator := p.currentToken
 		err = p.Consume(p.currentToken.Type)
@@ -80,7 +93,6 @@ func (p *Parser) Expr() (ast.Expr, error) {
 		}
 		left := node
 
-		// Get the value on the right
 		node, err = p.Term()
 		if err != nil {
 			return nil, err
@@ -102,7 +114,7 @@ func (p *Parser) Term() (ast.Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Check if current token is of type multiplication or division
+
 	for p.currentToken.Type == token.Mul || p.currentToken.Type == token.Div {
 		operator := p.currentToken
 		err = p.Consume(p.currentToken.Type)
@@ -112,7 +124,6 @@ func (p *Parser) Term() (ast.Expr, error) {
 
 		left := node
 
-		// Get the value on the right
 		right, err := p.Factor()
 		if err != nil {
 			return nil, err

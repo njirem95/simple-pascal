@@ -699,7 +699,7 @@ func TestParser_Factor_Variable(t *testing.T) {
 	assert.Equal(t, expected, variable)
 }
 
-func TestParser_AssignmentStmt(t *testing.T) {
+func TestParser_Statement_AssignmentStmt(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -742,14 +742,21 @@ func TestParser_AssignmentStmt(t *testing.T) {
 		Lexeme: ":=",
 	}
 
-	before := m.EXPECT().Next().Return(current)
+	before := m.
+		EXPECT().
+		Next().
+		Return(current)
 
 	current = token.Token{
 		Type:   token.Int,
 		Lexeme: "2",
 	}
 
-	before = m.EXPECT().Next().Return(current).After(before)
+	before = m.
+		EXPECT().
+		Next().
+		Return(current).
+		After(before)
 
 	current = token.Token{
 		Type:   token.EOF,
@@ -763,12 +770,29 @@ func TestParser_AssignmentStmt(t *testing.T) {
 		AnyTimes().
 		After(before)
 
-	result, err := parser.AssignmentStmt()
+	result, err := parser.Statement()
 	assert.Nil(t, err)
 
-	// sanity check
-	assignment, ok := result.(*ast.Assign)
-	assert.True(t, ok)
+	assert.Equal(t, expected, result)
+}
 
-	assert.Equal(t, expected, assignment)
+func TestParser_Statement_Empty(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	expected := &ast.Empty{}
+
+	m := mock_scanner.NewMockScanner(ctrl)
+	current  := token.Token{
+		Type: token.EOF,
+		Lexeme: "",
+	}
+
+	m.EXPECT().Next().Return(current).AnyTimes()
+	parser := parser.New(m)
+
+	stmt, err := parser.Statement()
+	assert.Nil(t, err)
+
+	assert.Equal(t, expected, stmt)
 }
