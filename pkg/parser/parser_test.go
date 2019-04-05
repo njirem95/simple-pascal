@@ -796,3 +796,160 @@ func TestParser_Statement_Empty(t *testing.T) {
 
 	assert.Equal(t, expected, stmt)
 }
+
+func TestParser_StmtList(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mock_scanner.NewMockScanner(ctrl)
+
+	_ = "x := 2; y := 4;"
+	expected := []ast.Statement{
+		&ast.Assign{
+			Left: &ast.Variable{
+				Name: "x",
+				Token: token.Token{
+					Type:   token.Identifier,
+					Lexeme: "x",
+				},
+			},
+			Operator: token.Token{
+				Type:   token.Assign,
+				Lexeme: ":=",
+			},
+			Right: &ast.Num{
+				Lexeme: "2",
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "2",
+				},
+			},
+		},
+		&ast.Assign{
+			Left: &ast.Variable{
+				Name: "y",
+				Token: token.Token{
+					Type:   token.Identifier,
+					Lexeme: "y",
+				},
+			},
+			Operator: token.Token{
+				Type:   token.Assign,
+				Lexeme: ":=",
+			},
+			Right: &ast.Num{
+				Lexeme: "4",
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "4",
+				},
+			},
+		},
+		&ast.Empty{},
+	}
+
+	returnValue := token.Token{
+		Type:   token.Identifier,
+		Lexeme: "x",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(returnValue)
+
+	parser := parser.New(m)
+
+	returnValue = token.Token{
+		Type:   token.Assign,
+		Lexeme: ":=",
+	}
+
+	before := m.
+		EXPECT().
+		Next().
+		Return(returnValue)
+
+	returnValue = token.Token{
+		Type:   token.Int,
+		Lexeme: "2",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.Semi,
+		Lexeme: ";",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.Identifier,
+		Lexeme: "y",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.Assign,
+		Lexeme: ":=",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.Int,
+		Lexeme: "4",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.Semi,
+		Lexeme: ";",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before).
+		AnyTimes()
+
+	statements, err := parser.StmtList()
+	assert.Nil(t, err)
+
+	assert.Equal(t, expected, statements)
+}

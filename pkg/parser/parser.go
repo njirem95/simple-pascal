@@ -25,7 +25,6 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
-// TODO create tests for StmtList function---this code is untested.
 func (p *Parser) StmtList() ([]ast.Statement, error) {
 	node, err := p.Statement()
 	if err != nil {
@@ -37,6 +36,10 @@ func (p *Parser) StmtList() ([]ast.Statement, error) {
 
 	// Add the next statement to the list if the current token is a semicolon.
 	for p.currentToken.Type == token.Semi {
+		err := p.Consume(token.Semi)
+		if err != nil {
+			return nil, err
+		}
 		node, err := p.Statement()
 		if err != nil {
 			return nil, err
@@ -66,6 +69,7 @@ func (p *Parser) AssignmentStmt() (*ast.Assign, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	operator := p.currentToken
 	err = p.Consume(token.Assign)
 	if err != nil {
