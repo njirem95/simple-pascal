@@ -803,7 +803,6 @@ func TestParser_StmtList(t *testing.T) {
 
 	m := mock_scanner.NewMockScanner(ctrl)
 
-	_ = "x := 2; y := 4;"
 	expected := []ast.Statement{
 		&ast.Assign{
 			Left: &ast.Variable{
@@ -954,7 +953,7 @@ func TestParser_StmtList(t *testing.T) {
 	assert.Equal(t, expected, statements)
 }
 
-func TestParser_CompoundStmt(t *testing.T) {
+func TestParser_Program(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -1038,17 +1037,28 @@ func TestParser_CompoundStmt(t *testing.T) {
 		After(before)
 
 	returnValue = token.Token{
+		Type:   token.Dot,
+		Lexeme: ".",
+	}
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
 		Type:   token.EOF,
 		Lexeme: "",
 	}
+
 	m.
 		EXPECT().
 		Next().
 		Return(returnValue).
-		AnyTimes().
-		After(before)
+		After(before).
+		AnyTimes()
 
-	statements, err := parser.CompoundStmt()
+	statements, err := parser.Program()
 	assert.Nil(t, err)
 
 	assert.Equal(t, expected, statements)

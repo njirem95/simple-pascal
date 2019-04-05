@@ -25,7 +25,20 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
-// compound_statement : BEGIN statement_list END
+func (p *Parser) Program() ([]ast.Statement, error) {
+	statements, err := p.CompoundStmt()
+	if err != nil {
+		return nil, err
+	}
+
+	err = p.Consume(token.Dot)
+	if err != nil {
+		return nil, err
+	}
+
+	return statements, nil
+}
+
 func (p *Parser) CompoundStmt() ([]ast.Statement, error) {
 	err := p.Consume(token.Begin)
 	if err != nil {
@@ -74,6 +87,8 @@ func (p *Parser) Statement() (ast.Statement, error) {
 	switch p.currentToken.Type {
 	case token.Identifier:
 		return p.AssignmentStmt()
+	case token.Begin:
+		return p.CompoundStmt()
 	default:
 		return p.Empty()
 	}
