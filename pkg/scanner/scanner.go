@@ -65,10 +65,13 @@ func (s *scanner) Next() token.Token {
 			sb.WriteString(s.Current)
 
 			for s.Peek() >= "a" && s.Peek() <= "z" || s.Peek() >= "A" && s.Peek() <= "Z" {
+				if strings.ToLower(sb.String()) == "begin" || strings.ToLower(sb.String()) == "end" {
+					s.Advance()
+					break
+				}
 				sb.WriteString(s.Peek())
 				s.Advance()
 			}
-
 			result := strings.ToLower(sb.String())
 			var newToken token.Token
 			switch result {
@@ -171,7 +174,7 @@ func (s *scanner) Next() token.Token {
 		if s.Current >= "0" && s.Current <= "9" {
 			var sb strings.Builder
 			sb.WriteString(s.Current)
-			for s.Peek() >= "0" {
+			for s.Peek() >= "0" && s.Peek() <= "9" {
 				sb.WriteString(s.Peek())
 				s.Advance()
 			}

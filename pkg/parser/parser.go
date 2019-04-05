@@ -2,14 +2,14 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"github.com/njirem95/simple-pascal/pkg/ast"
 	"github.com/njirem95/simple-pascal/pkg/scanner"
 	"github.com/njirem95/simple-pascal/pkg/scanner/token"
 )
 
 var (
-	consumeTokenError = errors.New("unable to consume token")
-	endReachedError   = errors.New("reached end of recursion")
+	endReachedError = errors.New("reached end of recursion")
 )
 
 type Parser struct {
@@ -22,7 +22,7 @@ func (p *Parser) Consume(tokenType int) error {
 		p.currentToken = p.lexer.Next()
 		return nil
 	}
-	return consumeTokenError
+	return fmt.Errorf("unable to consume token %s", p.currentToken.Lexeme)
 }
 
 func (p *Parser) Program() ([]ast.Statement, error) {
