@@ -25,6 +25,25 @@ func (p *Parser) Consume(tokenType int) error {
 	return consumeTokenError
 }
 
+// compound_statement : BEGIN statement_list END
+func (p *Parser) CompoundStmt() ([]ast.Statement, error) {
+	err := p.Consume(token.Begin)
+	if err != nil {
+		return nil, err
+	}
+
+	statements, err := p.StmtList()
+	if err != nil {
+		return nil, err
+	}
+
+	err = p.Consume(token.End)
+	if err != nil {
+		return nil, err
+	}
+	return statements, nil
+}
+
 func (p *Parser) StmtList() ([]ast.Statement, error) {
 	node, err := p.Statement()
 	if err != nil {

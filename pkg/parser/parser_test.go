@@ -953,3 +953,103 @@ func TestParser_StmtList(t *testing.T) {
 
 	assert.Equal(t, expected, statements)
 }
+
+func TestParser_CompoundStmt(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mock_scanner.NewMockScanner(ctrl)
+
+	expected := []ast.Statement{
+		&ast.Assign{
+			Left: &ast.Variable{
+				Name: "x",
+				Token: token.Token{
+					Type:   token.Identifier,
+					Lexeme: "x",
+				},
+			},
+
+			Operator: token.Token{
+				Type:   token.Assign,
+				Lexeme: ":=",
+			},
+
+			Right: &ast.Num{
+				Token: token.Token{
+					Type:   token.Int,
+					Lexeme: "10",
+				},
+				Lexeme: "10",
+			},
+		},
+	}
+
+	returnValue := token.Token{
+		Type:   token.Begin,
+		Lexeme: "begin",
+	}
+
+	m.
+		EXPECT().
+		Next().
+		Return(returnValue)
+
+	parser := parser.New(m)
+
+	returnValue = token.Token{
+		Type:   token.Identifier,
+		Lexeme: "x",
+	}
+
+	before := m.EXPECT().Next().Return(returnValue)
+
+	returnValue = token.Token{
+		Type:   token.Assign,
+		Lexeme: ":=",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.Int,
+		Lexeme: "10",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.End,
+		Lexeme: "end",
+	}
+
+	before = m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		After(before)
+
+	returnValue = token.Token{
+		Type:   token.EOF,
+		Lexeme: "",
+	}
+	m.
+		EXPECT().
+		Next().
+		Return(returnValue).
+		AnyTimes().
+		After(before)
+
+	statements, err := parser.CompoundStmt()
+	assert.Nil(t, err)
+
+	assert.Equal(t, expected, statements)
+}
