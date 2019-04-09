@@ -56,22 +56,24 @@ type scanner struct {
 // Next returns the next token from the input stream.
 func (s *scanner) Next() token.Token {
 	for s.Current != "" {
-		if s.Current == " " {
+		if s.Current == " " || s.Current == "\n" {
 			s.Advance()
 			continue
 		}
+
 		if s.Current >= "a" && s.Current <= "z" || s.Current >= "A" && s.Current <= "Z" {
 			var sb strings.Builder
 			sb.WriteString(s.Current)
 
 			for s.Peek() >= "a" && s.Peek() <= "z" || s.Peek() >= "A" && s.Peek() <= "Z" {
 				if strings.ToLower(sb.String()) == "begin" || strings.ToLower(sb.String()) == "end" {
-					s.Advance()
 					break
 				}
 				sb.WriteString(s.Peek())
 				s.Advance()
 			}
+
+			s.Advance()
 			result := strings.ToLower(sb.String())
 			var newToken token.Token
 			switch result {
@@ -91,8 +93,6 @@ func (s *scanner) Next() token.Token {
 				}
 				break
 			}
-
-			s.Advance()
 
 			newToken.Lexeme = result
 			return newToken
